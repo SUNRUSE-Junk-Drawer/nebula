@@ -6,7 +6,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("sprigganjs")
     grunt.initConfig({
         clean: {
-            dist: "dist"
+            dist: "dist/**/*"
         },
         copy: {
             png: {
