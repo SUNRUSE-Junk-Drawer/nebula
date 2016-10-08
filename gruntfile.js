@@ -3,6 +3,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-contrib-clean")
     grunt.loadNpmTasks("grunt-contrib-uglify")
     grunt.loadNpmTasks("grunt-contrib-htmlmin")
+    grunt.loadNpmTasks("grunt-contrib-watch")
     grunt.loadNpmTasks("sprigganjs")
     grunt.initConfig({
         clean: {
@@ -52,12 +53,21 @@ module.exports = function(grunt) {
                     ext: ""
                 }]
             }
+        },
+        watch: {
+            all: {
+                options: {
+                    atBegin: true
+                },
+                files: "src/**/*",
+                tasks: [
+                    "clean:dist", 
+                    "htmlmin",
+                    "uglify",
+                    "sprigganjs-aseprite"
+                ]
+            }
         }
     })
-    grunt.registerTask("default", [
-        "clean:dist", 
-        "htmlmin",
-        "uglify",
-        "sprigganjs-aseprite"
-    ])
+    grunt.registerTask("default", ["watch"])
 }
