@@ -1,0 +1,29 @@
+{
+  "name": "nebula",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunruse/nebula.git"
+  },
+  "author": {
+    "name": "SUNRUSE",
+    "email": "open.source@sunruse.co.uk",
+    "url": "https://sunruse.co.uk"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sunruse/nebula/issues",
+    "email": "open.source@sunruse.co.uk"
+  },
+  "homepage": "https://github.com/sunruse/nebula#readme",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-uglify": "^2.0.0",
+    "sprigganjs": "0.0.7"
+  }
+}
