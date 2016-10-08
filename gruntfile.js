@@ -48,7 +48,8 @@ module.exports = function(grunt) {
                     expand: true,
                     src: "**/*.ase",
                     dest: "dist",
-                    cwd: "src"
+                    cwd: "src",
+                    ext: ""
                 }]
             }
         }
