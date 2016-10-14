@@ -168,11 +168,12 @@ function Battle() {
         battle.backgroundGroup = new SprigganGroup(battle.gameGroup)
         battle.charactersGroup = new SprigganGroup(battle.gameGroup)
         battle.effectsGroup = new SprigganGroup(battle.gameGroup)
-        battle.uiGroup = new SprigganGroup(battle.viewport)
+        
+        battle.bottomLeftUiViewport = new SprigganViewport(428, 240, "left", "bottom")
     
         battle.roomsLoaded.raise()
         battle.charactersLoaded.raise()
-        var playPause = new SprigganSprite(battle.uiGroup, battle.contentManager, "battle", function() {
+        var playPause = new SprigganSprite(battle.bottomLeftUiViewport, battle.contentManager, "battle", function() {
             if (battle.gameGroup.paused) {
                 battle.gameGroup.resume()
                 playPause.loop("pause")
