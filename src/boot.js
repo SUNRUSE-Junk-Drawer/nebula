@@ -93,12 +93,12 @@ function Character(room) {
     var character = this
     character.room = room
     character.destination = room
-    character.room.battle.contentManager.add(SprigganSpriteSheet, "character", function() {
-        character.battle.characterClicked.raise(character)
-    })
+    character.room.battle.contentManager.add(SprigganSpriteSheet, "character")
     
     this.room.battle.charactersLoaded.listen(function(){
-        character.sprite = new SprigganSprite(character.room.battle.charactersGroup, character.room.battle.contentManager, "character")
+        character.sprite = new SprigganSprite(character.room.battle.charactersGroup, character.room.battle.contentManager, "character", function() {
+            character.battle.characterClicked.raise(character)
+        })
         character.sprite.loop("idleRight")
         character.sprite.move(character.room.x, character.room.y)
     })
