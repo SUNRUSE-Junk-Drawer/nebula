@@ -35,6 +35,13 @@ module.exports = function(grunt) {
         },
         uglify: {
             js: {
+                options: {
+                    // Allows SprigganJavaScript-parsed files.
+                    bare_returns: true,
+                    beautify: false,
+                    compress: true,
+                    mangle: true
+                },
                 files: [{
                     expand: true,
                     src: "**/*.js",
