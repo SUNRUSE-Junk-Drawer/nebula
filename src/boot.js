@@ -200,6 +200,30 @@ function Game(roomPath) {
         game.backgroundGroup.move(214, 120)
         game.markersGroup = new SprigganGroup(game.group)
         game.charactersGroup = new SprigganGroup(game.group)
+        
+        game.bottomLeftViewport = new SprigganViewport(428, 240, "left", "bottom")
+        var playPause = new SprigganSprite(game.bottomLeftViewport, game.contentManager, "battle")
+        playPause.loop("pause")
+        
+        game.bottomRightViewport = new SprigganViewport(428, 240, "right", "bottom")
+        var inventoryOpenClose = new SprigganSprite(game.bottomRightViewport, game.contentManager, "battle", ToggleInventory)
+        inventoryOpenClose.loop("inventoryClosed")
+        var inventoryOpen = false
+        function ToggleInventory() {
+            inventoryOpen = !inventoryOpen
+            if (inventoryOpen) {
+                inventoryOpenClose.loop("inventoryOpened")
+                inventoryPanelBackground.moveAtPixelsPerSecond(0, 0, 800)
+            } else {
+                inventoryOpenClose.loop("inventoryClosed")
+                inventoryPanelBackground.moveAtPixelsPerSecond(120, 0, 800)
+            }
+        }
+        var inventoryPanelGroup = new SprigganGroup(game.bottomRightViewport)
+        var inventoryPanelBackground = new SprigganSprite(inventoryPanelGroup, game.contentManager, "battle")
+        inventoryPanelBackground.loop("inventoryPanel")
+        inventoryPanelBackground.move(120, 0)
+        
         game.initializeRoom.raise()
         game.initializeParty.raise()
     }
