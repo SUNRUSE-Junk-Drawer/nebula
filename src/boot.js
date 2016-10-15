@@ -1,22 +1,22 @@
 function SprigganBoot(contentManager) {
     contentManager.add(SprigganSpriteSheet, "character")
     return function() {
-        new Battle()
+        new Game()
     }
 }
 
 // Represents a place characters can stand.
-function Room(battle, x, y) {
+function Room(game, x, y) {
     var room = this
-    room.battle = battle
-    battle.contentManager.add(SprigganSpriteSheet, "room")
+    room.game = game
+    game.contentManager.add(SprigganSpriteSheet, "room")
     room.x = x
     room.y = y
     room.links = []
     
-    battle.roomsLoaded.listen(function(){
-        room.sprite = new SprigganSprite(battle.backgroundGroup, battle.contentManager, "room", function() {
-            battle.roomClicked.raise(room)
+    game.roomsLoaded.listen(function(){
+        room.sprite = new SprigganSprite(game.backgroundGroup, game.contentManager, "room", function() {
+            game.roomClicked.raise(room)
         })
         room.sprite.loop("room")
         room.sprite.move(room.x, room.y)
@@ -93,25 +93,25 @@ function Character(room) {
     var character = this
     character.room = room
     character.destination = room
-    character.room.battle.contentManager.add(SprigganSpriteSheet, "character")
+    character.room.game.contentManager.add(SprigganSpriteSheet, "character")
     
-    this.room.battle.charactersLoaded.listen(function(){
-        character.group = new SprigganGroup(character.room.battle.charactersGroup)
+    this.room.game.charactersLoaded.listen(function(){
+        character.group = new SprigganGroup(character.room.game.charactersGroup)
         
-        character.selectionMarker = new SprigganSprite(character.group, character.room.battle.contentManager, "battle")
+        character.selectionMarker = new SprigganSprite(character.group, character.room.game.contentManager, "battle")
         character.selectionMarker.loop("selected")
         character.selectionMarker.hide()
         
-        character.marker = new SprigganSprite(room.battle.markersGroup, character.room.battle.contentManager, "battle")
+        character.marker = new SprigganSprite(room.game.markersGroup, character.room.game.contentManager, "battle")
         character.marker.hide()
         
-        character.sprite = new SprigganSprite(character.group, character.room.battle.contentManager, "character", function() {
-            character.room.battle.characterClicked.raise(character)
+        character.sprite = new SprigganSprite(character.group, character.room.game.contentManager, "character", function() {
+            character.room.game.characterClicked.raise(character)
         })
         character.sprite.loop("idleRight")
         character.group.move(character.room.x, character.room.y)
             
-        character.room.battle.characterClicked.listen(function(clickedCharacter) {
+        character.room.game.characterClicked.listen(function(clickedCharacter) {
             if (character == clickedCharacter) {
                 character.selected = !character.selected
             } else {
@@ -123,7 +123,7 @@ function Character(room) {
                 character.selectionMarker.hide()
         })
         
-        character.room.battle.roomClicked.listen(function(room) {
+        character.room.game.roomClicked.listen(function(room) {
             if (!character.selected) return
             character.selected = false
             character.selectionMarker.hide()
@@ -158,25 +158,25 @@ function Character(room) {
     })
 }
 
-function Battle() {
-    var battle = this
-    battle.roomsLoaded = new SprigganEventOnce()
-    battle.charactersLoaded = new SprigganEventOnce()
-    battle.roomClicked = new SprigganEventRecurring()
-    battle.characterClicked = new SprigganEventRecurring()
-    battle.contentManager = new SprigganContentManager({
+function Game() {
+    var game = this
+    game.roomsLoaded = new SprigganEventOnce()
+    game.charactersLoaded = new SprigganEventOnce()
+    game.roomClicked = new SprigganEventRecurring()
+    game.characterClicked = new SprigganEventRecurring()
+    game.contentManager = new SprigganContentManager({
         loaded: Loaded
     })
     
-    battle.contentManager.add(SprigganSpriteSheet, "battle")
+    game.contentManager.add(SprigganSpriteSheet, "battle")
     
     // This is a ring of test rooms with bidirecitonal links.
-    var roomA = new Room(battle, 20, 40)
-    var roomB = new Room(battle, 80, 30)
-    var roomC = new Room(battle, 80, 78)
-    var roomD = new Room(battle, 140, 35)
-    var roomE = new Room(battle, 160, 90)
-    var roomF = new Room(battle, 110, 140)
+    var roomA = new Room(game, 20, 40)
+    var roomB = new Room(game, 80, 30)
+    var roomC = new Room(game, 80, 78)
+    var roomD = new Room(game, 140, 35)
+    var roomE = new Room(game, 160, 90)
+    var roomF = new Room(game, 110, 140)
     new Link(roomA, roomB, ["walk"])
     new Link(roomB, roomC, ["walk"])
     new Link(roomB, roomA, ["walk"])
@@ -194,23 +194,23 @@ function Battle() {
     new Character(roomC)
     
     function Loaded() {    
-        battle.viewport = new SprigganViewport(428, 240)
-        battle.gameGroup = new SprigganGroup(battle.viewport)
-        battle.backgroundGroup = new SprigganGroup(battle.gameGroup)
-        battle.markersGroup = new SprigganGroup(battle.gameGroup)
-        battle.charactersGroup = new SprigganGroup(battle.gameGroup)
-        battle.effectsGroup = new SprigganGroup(battle.gameGroup)
+        game.viewport = new SprigganViewport(428, 240)
+        game.gameGroup = new SprigganGroup(game.viewport)
+        game.backgroundGroup = new SprigganGroup(game.gameGroup)
+        game.markersGroup = new SprigganGroup(game.gameGroup)
+        game.charactersGroup = new SprigganGroup(game.gameGroup)
+        game.effectsGroup = new SprigganGroup(game.gameGroup)
         
-        battle.bottomLeftUiViewport = new SprigganViewport(428, 240, "left", "bottom")
+        game.bottomLeftUiViewport = new SprigganViewport(428, 240, "left", "bottom")
     
-        battle.roomsLoaded.raise()
-        battle.charactersLoaded.raise()
-        var playPause = new SprigganSprite(battle.bottomLeftUiViewport, battle.contentManager, "battle", function() {
-            if (battle.gameGroup.paused) {
-                battle.gameGroup.resume()
+        game.roomsLoaded.raise()
+        game.charactersLoaded.raise()
+        var playPause = new SprigganSprite(game.bottomLeftUiViewport, game.contentManager, "battle", function() {
+            if (game.gameGroup.paused) {
+                game.gameGroup.resume()
                 playPause.loop("pause")
             } else {
-                battle.gameGroup.pause()
+                game.gameGroup.pause()
                 playPause.loop("play")
             }
         })
