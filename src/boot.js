@@ -96,36 +96,66 @@ function Character(room) {
     character.room.battle.contentManager.add(SprigganSpriteSheet, "character")
     
     this.room.battle.charactersLoaded.listen(function(){
-        character.sprite = new SprigganSprite(character.room.battle.charactersGroup, character.room.battle.contentManager, "character", function() {
-            character.battle.characterClicked.raise(character)
+        character.group = new SprigganGroup(character.room.battle.charactersGroup)
+        
+        character.selectionMarker = new SprigganSprite(character.group, character.room.battle.contentManager, "battle")
+        character.selectionMarker.loop("selected")
+        character.selectionMarker.hide()
+        
+        character.marker = new SprigganSprite(room.battle.markersGroup, character.room.battle.contentManager, "battle")
+        character.marker.hide()
+        
+        character.sprite = new SprigganSprite(character.group, character.room.battle.contentManager, "character", function() {
+            character.room.battle.characterClicked.raise(character)
         })
         character.sprite.loop("idleRight")
-        character.sprite.move(character.room.x, character.room.y)
-    })
-    
-    character.room.battle.roomClicked.listen(function(room) {
-        character.destination = room
-        Think()
-    })
-    
-    var moving = false
-    
-    function Think() {
-        if (moving) return
+        character.group.move(character.room.x, character.room.y)
+            
+        character.room.battle.characterClicked.listen(function(clickedCharacter) {
+            if (character == clickedCharacter) {
+                character.selected = !character.selected
+            } else {
+                character.selected = false
+            }
+            if (character.selected)
+                character.selectionMarker.show()
+            else
+                character.selectionMarker.hide()
+        })
         
-        if (character.room != character.destination) {
-            var next = character.room.navigateTo(character.destination)
-            if (next == null) return
-            character.room = next
-            moving = true
-            character.sprite.moveAtPixelsPerSecond(character.room.x, character.room.y, 100, function() {
-                moving = false
-                Think()
-            })
+        character.room.battle.roomClicked.listen(function(room) {
+            if (!character.selected) return
+            character.selected = false
+            character.selectionMarker.hide()
+            character.marker.move(room.x, room.y)
+            character.marker.loop("moving")
+            character.marker.show()
+            character.destination = room
+            Think()
+        })
+        
+        var moving = false
+        
+        function Think() {
+            if (moving) return
+            
+            if (character.room != character.destination) {
+                var next = character.room.navigateTo(character.destination)
+                if (next == null) return
+                character.room = next
+                moving = true
+                character.group.moveAtPixelsPerSecond(character.room.x, character.room.y, 100, function() {
+                    moving = false
+                    Think()
+                })
+                return
+            }
+            
+            character.marker.hide()
         }
-    }
-    
-    Think()
+        
+        Think()        
+    })
 }
 
 function Battle() {
@@ -161,11 +191,13 @@ function Battle() {
     new Link(roomC, roomF, ["walk"])
     
     new Character(roomA)
+    new Character(roomC)
     
     function Loaded() {    
         battle.viewport = new SprigganViewport(428, 240)
         battle.gameGroup = new SprigganGroup(battle.viewport)
         battle.backgroundGroup = new SprigganGroup(battle.gameGroup)
+        battle.markersGroup = new SprigganGroup(battle.gameGroup)
         battle.charactersGroup = new SprigganGroup(battle.gameGroup)
         battle.effectsGroup = new SprigganGroup(battle.gameGroup)
         
