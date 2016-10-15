@@ -202,8 +202,19 @@ function Game(roomPath) {
         game.charactersGroup = new SprigganGroup(game.group)
         
         game.bottomLeftViewport = new SprigganViewport(428, 240, "left", "bottom")
-        var playPause = new SprigganSprite(game.bottomLeftViewport, game.contentManager, "battle")
+        var playPause = new SprigganSprite(game.bottomLeftViewport, game.contentManager, "battle", TogglePause)
         playPause.loop("pause")
+        var paused = false
+        function TogglePause() {
+            paused = !paused
+            if (paused) {
+                playPause.loop("play")
+                game.group.pause()
+            } else {
+                playPause.loop("pause")
+                game.group.resume()
+            }
+        }
         
         game.bottomRightViewport = new SprigganViewport(428, 240, "right", "bottom")
         var inventoryOpenClose = new SprigganSprite(game.bottomRightViewport, game.contentManager, "battle", ToggleInventory)
