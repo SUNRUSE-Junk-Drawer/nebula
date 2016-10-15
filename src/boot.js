@@ -12,12 +12,24 @@ function Room(game, spriteSheetUrl, name, x, y) {
     room.x = x
     room.y = y
     room.links = []
+    room.entered = new SprigganEventRecurring()
+    room.exited = new SprigganEventRecurring()
+    room.arrived = new SprigganEventRecurring()
     game.contentManager.add(SprigganSpriteSheet, spriteSheetUrl)
     game.initializeRoom.listen(function(){
         room.sprite = new SprigganSprite(game.backgroundGroup, game.contentManager, spriteSheetUrl, function(){
             game.roomClicked.raise(room)
         })
         room.sprite.loop(name)
+    })
+}
+
+// A Room which changes the room when all party members are inside.
+function Door(game, spriteSheetUrl, name, x, y, roomPath) {
+    Room.call(this, game, spriteSheetUrl, name, x, y)
+    this.arrived.listen(function() {
+        game.dispose()
+        new Game(roomPath)
     })
 }
 
@@ -140,17 +152,22 @@ function Character(room) {
             if (character.room != character.destination) {
                 var next = character.room.navigateTo(character.destination)
                 if (next == null) return
+                character.room.exited.raise(character)
                 character.room = next
                 moving = true
                 character.group.moveAtPixelsPerSecond(character.room.x, character.room.y, 100, function() {
                     moving = false
+                    character.room.arrived.raise(character)
                     Think()
                 })
+                character.room.entered.raise(character)
                 return
             }
             
             character.marker.hide()
         }
+        
+        character.room.entered.raise(character)
         
         Think()        
     })
@@ -177,8 +194,8 @@ function Game(roomPath) {
     }
     
     function LoadedContent() {
-        var gameViewport = new SprigganViewport(428, 240)
-        game.group = new SprigganGroup(gameViewport)
+        game.viewport = new SprigganViewport(428, 240)
+        game.group = new SprigganGroup(game.viewport)
         game.backgroundGroup = new SprigganGroup(game.group)
         game.backgroundGroup.move(214, 120)
         game.markersGroup = new SprigganGroup(game.group)
@@ -186,4 +203,9 @@ function Game(roomPath) {
         game.initializeRoom.raise()
         game.initializeParty.raise()
     }
+}
+
+Game.prototype.dispose = function() {
+    this.contentManager.dispose()
+    this.viewport.dispose()
 }

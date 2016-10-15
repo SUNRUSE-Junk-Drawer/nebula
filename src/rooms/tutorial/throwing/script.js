@@ -39,7 +39,7 @@ return function(game) {
     new Link(pathToTargetD, target, ["walkable"])
     new Link(target, pathToTargetD, ["walkable"])        
 
-    var exit = new Room(game, "rooms/tutorial/throwing/atlas", "exit", 52, 185)
+    var exit = new Door(game, "rooms/tutorial/throwing/atlas", "exit", 52, 185, "tutorial/combat")
     new Link(distract, exit, ["walkable"])
     new Link(exit, distract, ["walkable"])        
     
