@@ -17,8 +17,18 @@ function SprigganBoot(contentManager) {
 
 var Items = {
     wrench: function(game, index) {
-        alert("You are using a wrench!")
-        game.inventory.remove(index)
+        game.target("room", function(room) {
+            game.giveOrder(function(character) {
+                game.inventory.remove(index)
+                var thrown = new SprigganSprite(character.room.game.effectsGroup, sharedContent, "items/icons")
+                thrown.loop("wrench")
+                thrown.move(character.group.x(), character.group.y())
+                thrown.moveAtPixelsPerSecond(room.x, room.y, 500, function() {
+                    thrown.dispose()
+                    new ItemPickup(room, "wrench")
+                })
+            })
+        })
     }
 }
 
@@ -199,9 +209,15 @@ function Character(room) {
             }
             
             character.marker.hide()
+            
+            if (character.room.game.orders.length) {
+                character.room.game.orders.pop()(character)
+                Think()
+            }
         }
         
         character.room.entered.raise(character)
+        character.room.game.orderGiven.listen(Think)
         
         Think()        
     })
@@ -211,6 +227,8 @@ function Game(savegame) {
     var game = this
     
     game.savegame = savegame
+    game.targeting = null
+    game.orders = []
     
     var roomScriptContentManager = new SprigganContentManager({ loaded: LoadedRoomScript })
     roomScriptContentManager.add(SprigganJavaScript, "rooms/" + savegame.roomPath + "/script.js")
@@ -220,6 +238,7 @@ function Game(savegame) {
         game.initializeParty = new SprigganEventOnce()
         game.roomClicked = new SprigganEventRecurring()
         game.characterClicked = new SprigganEventRecurring()
+        game.orderGiven = new SprigganEventRecurring()
         
         game.contentManager = new SprigganContentManager({ loaded: LoadedContent })
         game.contentManager.add(SprigganSpriteSheet, "battle")
@@ -237,6 +256,7 @@ function Game(savegame) {
         game.itemPickupsGroup = new SprigganGroup(game.group)
         game.markersGroup = new SprigganGroup(game.group)
         game.charactersGroup = new SprigganGroup(game.group)
+        game.effectsGroup = new SprigganGroup(game.group)
         
         game.bottomLeftViewport = new SprigganViewport(428, 240, "left", "bottom")
         var playPause = new SprigganSprite(game.bottomLeftViewport, game.contentManager, "battle", TogglePause)
@@ -263,6 +283,33 @@ function Game(savegame) {
 Game.prototype.dispose = function() {
     this.contentManager.dispose()
     this.viewport.dispose()
+}
+
+Game.prototype.target = function(type, then) {
+    var game = this
+    game.targeting = type
+    switch (type) {
+        case "room": {
+            function RoomClicked(room) {
+                game.characterClicked.unlisten(CharacterClicked)
+                then(room)
+            }
+            function CharacterClicked(character) {
+                game.roomClicked.unlisten(RoomClicked)
+                then(character.room)
+            }
+
+            game.roomClicked.listenOnce(RoomClicked)
+            game.characterClicked.listenOnce(CharacterClicked)
+            break
+        }
+        default: throw new Error("Unimplemented targeting type " + type)
+    }
+}
+
+Game.prototype.giveOrder = function(callback) {
+    this.orders.push(callback)
+    this.orderGiven.raise()
 }
 
 function Inventory(game) {
