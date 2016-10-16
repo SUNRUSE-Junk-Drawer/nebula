@@ -1,8 +1,34 @@
+var sharedContent
+
 function SprigganBoot(contentManager) {
     contentManager.add(SprigganSpriteSheet, "character")
+    contentManager.add(SprigganSpriteSheet, "items/icons")
+    sharedContent = contentManager
     return function() {
-        new Game("tutorial/throwing")
+        var savegame = {
+            roomPath: "tutorial/throwing",
+            inventory: []
+        }
+        while (savegame.inventory.length < 12) savegame.inventory.push(null)
+        
+        new Game(savegame)
     }
+}
+
+function ItemPickup(room, itemName) {
+    var itemPickup = this
+    room.game.initializeParty.listen(function(){
+        itemPickup.sprite = new SprigganSprite(room.game.itemPickupsGroup, sharedContent, "items/icons", function(){
+            room.game.roomClicked.raise(room)
+        })
+        room.arrived.listen(PerformPickup)
+        function PerformPickup(){
+            if (room.game.getItem(itemName)) itemPickup.sprite.dispose()
+            room.arrived.unlisten(PerformPickup)
+        }
+        itemPickup.sprite.loop("wrench")
+        itemPickup.sprite.move(room.x, room.y)
+    })
 }
 
 // Represents a place characters can stand.
@@ -29,7 +55,8 @@ function Door(game, spriteSheetUrl, name, x, y, roomPath) {
     Room.call(this, game, spriteSheetUrl, name, x, y)
     this.arrived.listen(function() {
         game.dispose()
-        new Game(roomPath)
+        game.savegame.roomPath = roomPath
+        new Game(game.savegame)
     })
 }
 
@@ -173,11 +200,13 @@ function Character(room) {
     })
 }
 
-function Game(roomPath) {
+function Game(savegame) {
     var game = this
     
+    game.savegame = savegame
+    
     var roomScriptContentManager = new SprigganContentManager({ loaded: LoadedRoomScript })
-    roomScriptContentManager.add(SprigganJavaScript, "rooms/" + roomPath + "/script.js")
+    roomScriptContentManager.add(SprigganJavaScript, "rooms/" + savegame.roomPath + "/script.js")
     
     function LoadedRoomScript() {
         game.initializeRoom = new SprigganEventOnce()
@@ -188,7 +217,7 @@ function Game(roomPath) {
         game.contentManager = new SprigganContentManager({ loaded: LoadedContent })
         game.contentManager.add(SprigganSpriteSheet, "battle")
         
-        roomScriptContentManager.get(SprigganJavaScript, "rooms/" + roomPath + "/script.js")(game)
+        roomScriptContentManager.get(SprigganJavaScript, "rooms/" + savegame.roomPath + "/script.js")(game)
         new Character(game.spawnRoom)
         roomScriptContentManager.dispose()
     }
@@ -198,6 +227,7 @@ function Game(roomPath) {
         game.group = new SprigganGroup(game.viewport)
         game.backgroundGroup = new SprigganGroup(game.group)
         game.backgroundGroup.move(214, 120)
+        game.itemPickupsGroup = new SprigganGroup(game.group)
         game.markersGroup = new SprigganGroup(game.group)
         game.charactersGroup = new SprigganGroup(game.group)
         
@@ -217,27 +247,65 @@ function Game(roomPath) {
         }
         
         game.bottomRightViewport = new SprigganViewport(428, 240, "right", "bottom")
-        var inventoryOpenClose = new SprigganSprite(game.bottomRightViewport, game.contentManager, "battle", ToggleInventory)
-        inventoryOpenClose.loop("inventoryClosed")
-        var inventoryOpen = false
+        game.inventoryOpenClose = new SprigganSprite(game.bottomRightViewport, game.contentManager, "battle", ToggleInventory)
+        game.inventoryOpenClose.loop("inventoryClosed")
+        game.inventoryOpen = false
         function ToggleInventory() {
-            inventoryOpen = !inventoryOpen
-            if (inventoryOpen) {
-                inventoryOpenClose.loop("inventoryOpened")
-                inventoryPanelBackground.moveAtPixelsPerSecond(0, 0, 800)
+            game.inventoryOpen = !game.inventoryOpen
+            if (game.inventoryOpen) {
+                game.inventoryOpenClose.loop("inventoryOpened")
+                inventoryPanelGroup.moveAtPixelsPerSecond(0, 0, 800)
             } else {
-                inventoryOpenClose.loop("inventoryClosed")
-                inventoryPanelBackground.moveAtPixelsPerSecond(120, 0, 800)
+                game.inventoryOpenClose.loop("inventoryClosed")
+                inventoryPanelGroup.moveAtPixelsPerSecond(120, 0, 800)
             }
         }
+        game.roomClicked.listen(CloseInventory)
+        game.characterClicked.listen(CloseInventory)
+        function CloseInventory() {
+            game.inventoryOpen = false
+            game.inventoryOpenClose.loop("inventoryClosed")
+            inventoryPanelGroup.moveAtPixelsPerSecond(120, 0, 800)
+        }
+        
         var inventoryPanelGroup = new SprigganGroup(game.bottomRightViewport)
         var inventoryPanelBackground = new SprigganSprite(inventoryPanelGroup, game.contentManager, "battle")
         inventoryPanelBackground.loop("inventoryPanel")
-        inventoryPanelBackground.move(120, 0)
-        
+        inventoryPanelGroup.move(120, 0)
+        game.inventorySlots = []
+        for (var y = 0; y < 4; y++) {
+            for (var x = 0; x < 3; x++) {
+                var sprite = new SprigganSprite(inventoryPanelGroup, sharedContent, "items/icons")
+                sprite.move(330 + x * 39, 63 + y * 39)
+                if (savegame.inventory[game.inventorySlots.length]) {
+                    sprite.loop("wrench")
+                } else {
+                    sprite.hide()
+                }
+                game.inventorySlots.push(sprite)
+            }
+        }
         game.initializeRoom.raise()
         game.initializeParty.raise()
     }
+}
+
+Game.prototype.getItem = function(itemName) {
+    var game = this
+    for (var i = 0; i < game.savegame.inventory.length; i++) {
+        if (game.savegame.inventory[i]) continue
+        game.savegame.inventory[i] = itemName
+        game.inventorySlots[i].loop(itemName)
+        game.inventorySlots[i].show()
+        game.inventoryOpenClose.play("inventoryAdded", function() {
+            game.inventoryOpenClose.loop("inventoryClosed")
+        })
+        return true
+    }
+    game.inventoryOpenClose.play("inventoryFull", function() {
+        game.inventoryOpenClose.loop("inventoryClosed")
+    })
+    return false
 }
 
 Game.prototype.dispose = function() {
