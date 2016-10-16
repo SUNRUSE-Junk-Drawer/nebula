@@ -23,7 +23,7 @@ function ItemPickup(room, itemName) {
         })
         room.arrived.listen(PerformPickup)
         function PerformPickup(){
-            if (room.game.getItem(itemName)) itemPickup.sprite.dispose()
+            if (room.game.inventory.tryToAcquire(itemName)) itemPickup.sprite.dispose()
             room.arrived.unlisten(PerformPickup)
         }
         itemPickup.sprite.loop("wrench")
@@ -245,70 +245,85 @@ function Game(savegame) {
                 game.group.resume()
             }
         }
-        
-        game.bottomRightViewport = new SprigganViewport(428, 240, "right", "bottom")
-        game.inventoryOpenClose = new SprigganSprite(game.bottomRightViewport, game.contentManager, "battle", ToggleInventory)
-        game.inventoryOpenClose.loop("inventoryClosed")
-        game.inventoryOpen = false
-        function ToggleInventory() {
-            game.inventoryOpen = !game.inventoryOpen
-            if (game.inventoryOpen) {
-                game.inventoryOpenClose.loop("inventoryOpened")
-                inventoryPanelGroup.moveAtPixelsPerSecond(0, 0, 800)
-            } else {
-                game.inventoryOpenClose.loop("inventoryClosed")
-                inventoryPanelGroup.moveAtPixelsPerSecond(120, 0, 800)
-            }
-        }
-        game.roomClicked.listen(CloseInventory)
-        game.characterClicked.listen(CloseInventory)
-        function CloseInventory() {
-            game.inventoryOpen = false
-            game.inventoryOpenClose.loop("inventoryClosed")
-            inventoryPanelGroup.moveAtPixelsPerSecond(120, 0, 800)
-        }
-        
-        var inventoryPanelGroup = new SprigganGroup(game.bottomRightViewport)
-        var inventoryPanelBackground = new SprigganSprite(inventoryPanelGroup, game.contentManager, "battle")
-        inventoryPanelBackground.loop("inventoryPanel")
-        inventoryPanelGroup.move(120, 0)
-        game.inventorySlots = []
-        for (var y = 0; y < 4; y++) {
-            for (var x = 0; x < 3; x++) {
-                var sprite = new SprigganSprite(inventoryPanelGroup, sharedContent, "items/icons")
-                sprite.move(330 + x * 39, 63 + y * 39)
-                if (savegame.inventory[game.inventorySlots.length]) {
-                    sprite.loop("wrench")
-                } else {
-                    sprite.hide()
-                }
-                game.inventorySlots.push(sprite)
-            }
-        }
+
         game.initializeRoom.raise()
         game.initializeParty.raise()
+        
+        game.inventory = new Inventory(game)
     }
-}
-
-Game.prototype.getItem = function(itemName) {
-    var game = this
-    for (var i = 0; i < game.savegame.inventory.length; i++) {
-        if (game.savegame.inventory[i]) continue
-        game.savegame.inventory[i] = itemName
-        game.inventorySlots[i].loop(itemName)
-        game.inventorySlots[i].show()
-        game.inventoryOpenClose.play("inventoryAdded", function() {
-            game.inventoryOpenClose.loop("inventoryClosed")
-        })
-        return true
-    }
-    game.inventoryOpenClose.play("inventoryFull", function() {
-        game.inventoryOpenClose.loop("inventoryClosed")
-    })
-    return false
 }
 
 Game.prototype.dispose = function() {
     this.contentManager.dispose()
     this.viewport.dispose()
+}
+
+function Inventory(game) {
+    var inventory = this
+    inventory.game = game
+    inventory.opened = false
+    inventory.viewport = new SprigganViewport(428, 240, "right", "bottom")
+    inventory.icon = new SprigganSprite(inventory.viewport, game.contentManager, "battle", ToggleInventory)
+    function ToggleInventory() {
+        inventory.opened = !inventory.opened
+        inventory.refresh()
+    }
+    
+    inventory.panelGroup = new SprigganGroup(inventory.viewport)
+    inventory.panelGroup.move(120, 0)
+    inventory.panelBackground = new SprigganSprite(inventory.panelGroup, game.contentManager, "battle")
+    inventory.panelBackground.loop("inventoryPanel")
+    
+    inventory.slots = []
+    for (var y = 0; y < 4; y++) {
+        for (var x = 0; x < 3; x++) {
+            new InventorySlot(inventory, x, y)
+        }
+    }
+    
+    inventory.refresh()     
+}
+
+Inventory.prototype.refresh = function() {
+    this.icon.loop(this.opened ? "inventoryOpened" : "inventoryClosed")
+    this.panelGroup.moveAtPixelsPerSecond(this.opened ? 0 : 120, 0, 1000)
+}
+
+Inventory.prototype.tryToAcquire = function(itemName) {
+    var inventory = this
+    for (var i = 0; i < inventory.game.savegame.inventory.length; i++) {
+        if (inventory.game.savegame.inventory[i]) continue
+        inventory.game.savegame.inventory[i] = itemName
+        inventory.slots[i].refresh()
+        inventory.icon.play("inventoryAdded", function() {
+            inventory.refresh()
+        })
+        return true
+    }
+    inventory.icon.play("inventoryFull", function() {
+        inventory.refresh()
+    })
+    return false
+}
+
+function InventorySlot(inventory, x, y) {
+    var inventorySlot = this
+    inventorySlot.inventory = inventory
+    inventorySlot.x = x
+    inventorySlot.y = y
+    inventorySlot.id = inventory.slots.length
+    inventory.slots.push(inventorySlot)
+    
+    inventorySlot.sprite = new SprigganSprite(inventory.panelGroup, sharedContent, "items/icons")
+    inventorySlot.sprite.move(330 + x * 39, 63 + y * 39)
+    
+    inventorySlot.refresh()
+}
+
+InventorySlot.prototype.refresh = function() {
+    var itemName = this.inventory.game.savegame.inventory[this.id]
+    if (itemName) {
+        this.sprite.loop(itemName)
+        this.sprite.show()
+    } else this.sprite.hide()
 }
