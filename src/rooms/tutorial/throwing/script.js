@@ -7,6 +7,7 @@ return function(game) {
     })
     
     var pickup = new Room(game, "rooms/tutorial/throwing/atlas", "pickup", 291, 219)
+    new ItemPickup(pickup, "wrench")
     var spawn = new Room(game, "rooms/tutorial/throwing/atlas", "spawn", 256, 174)
     
     new Link(pickup, spawn, ["walkable"])
