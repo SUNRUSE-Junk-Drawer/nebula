@@ -15,6 +15,13 @@ function SprigganBoot(contentManager) {
     }
 }
 
+var Items = {
+    wrench: function(game, index) {
+        alert("You are using a wrench!")
+        game.inventory.remove(index)
+    }
+}
+
 function ItemPickup(room, itemName) {
     var itemPickup = this
     room.game.initializeParty.listen(function(){
@@ -306,6 +313,11 @@ Inventory.prototype.tryToAcquire = function(itemName) {
     return false
 }
 
+Inventory.prototype.remove = function(index) {
+    this.game.savegame.inventory[index] = null
+    this.slots[index].refresh()
+}
+
 function InventorySlot(inventory, x, y) {
     var inventorySlot = this
     inventorySlot.inventory = inventory
@@ -314,7 +326,12 @@ function InventorySlot(inventory, x, y) {
     inventorySlot.id = inventory.slots.length
     inventory.slots.push(inventorySlot)
     
-    inventorySlot.sprite = new SprigganSprite(inventory.panelGroup, sharedContent, "items/icons")
+    inventorySlot.sprite = new SprigganSprite(inventory.panelGroup, sharedContent, "items/icons", Clicked)
+    
+    function Clicked() {
+        Items[inventory.game.savegame.inventory[inventorySlot.id]](inventory.game, inventorySlot.id)
+    }
+    
     inventorySlot.sprite.move(330 + x * 39, 63 + y * 39)
     
     inventorySlot.refresh()
