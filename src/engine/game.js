@@ -12,7 +12,7 @@ function Game(savegame) {
     roomScriptContentManager.add(SprigganJavaScript, "rooms/" + savegame.roomPath + "/script.js")
     
     function LoadedRoomScript() {
-        game.contentLoaded = new SprigganEventRecurring()
+        game.contentLoaded = new SprigganEventOnce()
         game.orderGiven = new SprigganEventRecurring()
         
         game.contentManager = new SprigganContentManager({ loaded: LoadedContent })
