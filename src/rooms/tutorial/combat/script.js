@@ -1,11 +1,6 @@
 return function(game) {
     game.contentManager.add(SprigganSpriteSheet, "rooms/tutorial/combat/atlas")
     
-    game.initializeRoom.listen(function() {
-        //var base = new SprigganSprite(game.backgroundGroup, game.contentManager, "rooms/tutorial/throwing/atlas")
-        //base.loop("base")
-    })
-    
     var entrance = new Room(game, "rooms/tutorial/combat/atlas", "entrance", 337, 176)
     var pathToEntrance = new Room(game, "rooms/tutorial/combat/atlas", "pathToEntrance", 284, 174)
     
