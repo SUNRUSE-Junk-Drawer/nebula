@@ -1,6 +1,6 @@
 var Items = {
     wrench: function(game, index) {
-        game.target("room", function(room) {
+        game.targetRoom(function(room) {
             game.giveOrder(function(character) {
                 game.inventory.remove(index)
                 var thrown = new SprigganSprite(character.room.game.effectsGroup, sharedContent, "items/icons")
@@ -17,9 +17,9 @@ var Items = {
 
 function ItemPickup(room, itemName) {
     var itemPickup = this
-    room.game.initializeParty.listen(function(){
+    room.game.contentLoaded.listen(function(){
         itemPickup.sprite = new SprigganSprite(room.game.itemPickupsGroup, sharedContent, "items/icons", function(){
-            room.game.roomClicked.raise(room)
+            room.game.itemPickupClicked(itemPickup)
         })
         room.arrived.listen(PerformPickup)
         function PerformPickup(){

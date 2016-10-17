@@ -1,11 +1,6 @@
 return function(game) {
     game.contentManager.add(SprigganSpriteSheet, "rooms/tutorial/throwing/atlas")
     
-    game.initializeRoom.listen(function() {
-        //var base = new SprigganSprite(game.backgroundGroup, game.contentManager, "rooms/tutorial/throwing/atlas")
-        //base.loop("base")
-    })
-    
     var pickup = new Room(game, "rooms/tutorial/throwing/atlas", "pickup", 291, 219)
     new ItemPickup(pickup, "wrench")
     var spawn = new Room(game, "rooms/tutorial/throwing/atlas", "spawn", 256, 174)

@@ -24,6 +24,11 @@ function Inventory(game) {
     inventory.refresh()     
 }
 
+Inventory.prototype.close = function() {
+    this.opened = false
+    this.refresh()
+}
+
 Inventory.prototype.refresh = function() {
     this.icon.loop(this.opened ? "inventoryOpened" : "inventoryClosed")
     this.panelGroup.moveAtPixelsPerSecond(this.opened ? 0 : 120, 0, 1000)

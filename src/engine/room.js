@@ -9,9 +9,9 @@ function Room(game, spriteSheetUrl, name, x, y) {
     room.exited = new SprigganEventRecurring()
     room.arrived = new SprigganEventRecurring()
     game.contentManager.add(SprigganSpriteSheet, spriteSheetUrl)
-    game.initializeRoom.listen(function(){
+    game.contentLoaded.listen(function(){
         room.sprite = new SprigganSprite(game.backgroundGroup, game.contentManager, spriteSheetUrl, function(){
-            game.roomClicked.raise(room)
+            game.roomClicked(room)
         })
         room.sprite.loop(name)
     })
