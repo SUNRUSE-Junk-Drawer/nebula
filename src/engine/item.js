@@ -17,6 +17,7 @@ var Items = {
 
 function ItemPickup(room, itemName) {
     var itemPickup = this
+    itemPickup.room = room
     room.game.contentLoaded.listen(function(){
         itemPickup.sprite = new SprigganSprite(room.game.itemPickupsGroup, sharedContent, "items/icons", function(){
             room.game.itemPickupClicked(itemPickup)

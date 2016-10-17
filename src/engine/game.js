@@ -4,6 +4,8 @@ function Game(savegame) {
     game.savegame = savegame
     game.interactionMode = "command"
     game.interactionModeChanged = new SprigganEventRecurring()
+    game.selectedCharacter = null
+    game.selectedCharacterChanged = new SprigganEventRecurring()
     game.orders = []
     
     var roomScriptContentManager = new SprigganContentManager({ loaded: LoadedRoomScript })
@@ -72,6 +74,12 @@ Game.prototype.roomClicked = function(room) {
             game.interactionModeChanged.raise("command")
             game.targetingCallback(room)
             break
+        case "command":
+            if (game.selectedCharacter) {
+                game.selectedCharacter.setDestination(room)
+                game.selectCharacter(null)
+            }
+            break
     }
 }
 
@@ -82,6 +90,9 @@ Game.prototype.characterClicked = function(character) {
             game.interactionMode = "command"
             game.interactionModeChanged.raise("command")
             game.targetingCallback(character.room)
+            break
+        case "command":
+            game.selectCharacter(character == game.selectedCharacter ? null : character)
             break
     }
 }
@@ -94,10 +105,22 @@ Game.prototype.itemPickupClicked = function(item) {
             game.interactionModeChanged.raise("command")
             game.targetingCallback(item.room)
             break
+        case "command":
+            if (game.selectedCharacter) {
+                game.selectedCharacter.setDestination(item.room)
+                game.selectCharacter(null)
+            }
+            break
     }
 }
 
 Game.prototype.giveOrder = function(callback) {
     this.orders.push(callback)
     this.orderGiven.raise()
+}
+
+Game.prototype.selectCharacter = function(character) {
+    var game = this
+    game.selectedCharacter = character
+    game.selectedCharacterChanged.raise(character)
 }
