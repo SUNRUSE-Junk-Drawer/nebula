@@ -6,15 +6,14 @@ function Game(savegame) {
     game.interactionModeChanged = new SprigganEventRecurring()
     game.selectedCharacter = null
     game.selectedCharacterChanged = new SprigganEventRecurring()
+    game.contentLoaded = new SprigganEventOnce()
+    game.orderGiven = new SprigganEventRecurring()
     game.orders = []
     
     var roomScriptContentManager = new SprigganContentManager({ loaded: LoadedRoomScript })
     roomScriptContentManager.add(SprigganJavaScript, "rooms/" + savegame.roomPath + "/script.js")
     
     function LoadedRoomScript() {
-        game.contentLoaded = new SprigganEventOnce()
-        game.orderGiven = new SprigganEventRecurring()
-        
         game.contentManager = new SprigganContentManager({ loaded: LoadedContent })
         game.contentManager.add(SprigganSpriteSheet, "battle")
         
