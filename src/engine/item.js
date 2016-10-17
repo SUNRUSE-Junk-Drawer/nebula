@@ -1,8 +1,8 @@
 var Items = {
     wrench: function(game, index) {
         game.targetRoom(function(room) {
+            game.inventory.remove(index)
             game.giveOrder(function(character) {
-                game.inventory.remove(index)
                 var thrown = new SprigganSprite(character.room.game.effectsGroup, sharedContent, "items/icons")
                 thrown.loop("wrench")
                 thrown.move(character.group.x(), character.group.y())
