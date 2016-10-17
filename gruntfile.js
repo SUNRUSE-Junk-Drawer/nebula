@@ -44,9 +44,12 @@ module.exports = function(grunt) {
                 },
                 files: [{
                     expand: true,
-                    src: "**/*.js",
+                    src: "**/*/*.js",
                     dest: "dist",
                     cwd: "src"
+                }, {
+                    src: "src/engine/**.js",
+                    dest: "dist/index.js"
                 }]
             }
         },
