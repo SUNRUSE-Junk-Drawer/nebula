@@ -32,25 +32,11 @@ function Game(savegame) {
         game.markersGroup = new SprigganGroup(game.group)
         game.charactersGroup = new SprigganGroup(game.group)
         game.effectsGroup = new SprigganGroup(game.group)
-        
-        game.bottomLeftViewport = new SprigganViewport(428, 240, "left", "bottom")
-        var playPause = new SprigganSprite(game.bottomLeftViewport, game.contentManager, "battle", TogglePause)
-        playPause.loop("pause")
-        var paused = false
-        function TogglePause() {
-            paused = !paused
-            if (paused) {
-                playPause.loop("play")
-                game.group.pause()
-            } else {
-                playPause.loop("pause")
-                game.group.resume()
-            }
-        }
 
         game.contentLoaded.raise()
         
         game.inventory = new Inventory(game)
+        game.playPause = new PlayPause(game)
     }
 }
 
