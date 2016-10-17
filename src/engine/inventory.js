@@ -56,6 +56,10 @@ Inventory.prototype.remove = function(index) {
     this.slots[index].refresh()
 }
 
+Inventory.prototype.dispose = function() {
+    this.viewport.dispose()
+}
+
 function InventorySlot(inventory, x, y) {
     var inventorySlot = this
     inventorySlot.inventory = inventory

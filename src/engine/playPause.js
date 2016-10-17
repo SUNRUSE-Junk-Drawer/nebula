@@ -15,3 +15,7 @@ function PlayPause(game) {
         }
     }
 }
+
+PlayPause.prototype.dispose = function() {
+    this.viewport.dispose()
+}

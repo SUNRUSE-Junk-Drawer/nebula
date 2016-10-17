@@ -42,6 +42,8 @@ function Game(savegame) {
 Game.prototype.dispose = function() {
     this.contentManager.dispose()
     this.viewport.dispose()
+    this.inventory.dispose()
+    this.playPause.dispose()
 }
 
 Game.prototype.targetRoom = function(callback) {
