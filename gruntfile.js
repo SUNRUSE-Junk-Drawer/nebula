@@ -40,7 +40,8 @@ module.exports = function(grunt) {
                     bare_returns: true,
                     beautify: false,
                     compress: true,
-                    mangle: true
+                    mangle: true,
+                    screwIE8: false
                 },
                 files: [{
                     expand: true,
