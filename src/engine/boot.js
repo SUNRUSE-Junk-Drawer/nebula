@@ -7,10 +7,12 @@ function SprigganBoot(contentManager) {
     return function() {
         var savegame = {
             roomPath: "tutorial/throwing",
+            areaPath: "test",
             inventory: []
         }
         while (savegame.inventory.length < 12) savegame.inventory.push(null)
         
-        new Game(savegame)
+        //new Game(savegame)
+        new NavigationGame(savegame)
     }
 }
