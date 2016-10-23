@@ -69,3 +69,16 @@ Character.prototype.think = function() {
         character.think()
     }
 }
+
+Character.prototype.say = function(text, horizontalAlignment, verticalAlignment) {
+    this.stopSaying()
+    this.speechGroup = SprigganWrite(this.group, sharedContent, "fontBig", fontBig, text, "center", "bottom")
+    this.speechGroup.moveAtPixelsPerSecond(0, -12, 64)
+}
+
+Character.prototype.stopSaying = function() {
+    if (this.speechGroup) {
+        this.speechGroup.dispose()
+        this.speechGroup = null
+    }
+}
