@@ -7,7 +7,7 @@ return function(navigationGame) {
     navigationGame.contentLoaded.listen(function(){
         var background = new SprigganSprite(navigationGame.backgroundGroup, navigationGame.contentManager, "navigation/backgrounds/dark")
         background.loop("base")
-        background.move(214, 120)
+        background.move(214 + 72, 120)
     })
     
     new NavigationOrbit(navigationGame, "bigPlanet", "Lone Moon", "testLoop", 30, -25)
