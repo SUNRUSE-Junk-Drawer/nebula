@@ -21,14 +21,19 @@ function NavigationGame(savegame) {
         navigationGame.orbitGroup = new SprigganGroup(navigationGame.viewport)
         navigationGame.uiGroup = new SprigganGroup(navigationGame.viewport)
         
+        navigationGame.areaNameGroup = SprigganWrite(navigationGame.uiGroup, sharedContent, "fontBig", fontBig, navigationGame.areaName)
+        navigationGame.areaNameGroup.move(1, 1)
+        
         navigationGame.contentLoaded.raise()
     }
 }
 
-function NavigationOrbit(navigationGame, type, x, y) {
+function NavigationOrbit(navigationGame, type, name, areaPath, x, y) {
     var navigationOrbit = this
     navigationOrbit.navigationGame = navigationGame
     navigationOrbit.type = type
+    navigationOrbit.name = name
+    navigationOrbit.areaPath = areaPath
     navigationOrbit.x = x
     navigationOrbit.y = y
     
@@ -40,5 +45,8 @@ function NavigationOrbit(navigationGame, type, x, y) {
         navigationOrbit.iconSprite = new SprigganSprite(navigationOrbit.navigationGame.orbitGroup, navigationOrbit.navigationGame.contentManager, "navigation/objects")
         navigationOrbit.iconSprite.loop(type)
         navigationOrbit.iconSprite.move(navigationOrbit.x, 120 + navigationOrbit.y)
+        
+        navigationOrbit.nameGroup = SprigganWrite(navigationGame.uiGroup, sharedContent, "fontBig", fontBig, navigationOrbit.name)
+        navigationOrbit.nameGroup.move(navigationOrbit.x, 120 + navigationOrbit.y + 16)
     })
 }
