@@ -54,7 +54,7 @@ function SprigganBoot(contentManager) {
         }
         while (savegame.inventory.length < 12) savegame.inventory.push(null)
         
-        //new Game(savegame)
-        new NavigationGame(savegame)
+        new Game(savegame)
+        //new NavigationGame(savegame)
     }
 }
