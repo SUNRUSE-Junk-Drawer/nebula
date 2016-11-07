@@ -1,5 +1,5 @@
 // Represents a place characters can stand.
-function Room(game, spriteSheetUrl, name, x, y) {
+function Room(game, x, y) {
     var room = this
     room.game = game
     room.x = x
@@ -8,18 +8,19 @@ function Room(game, spriteSheetUrl, name, x, y) {
     room.entered = new SprigganEventRecurring()
     room.exited = new SprigganEventRecurring()
     room.arrived = new SprigganEventRecurring()
-    game.contentManager.add(SprigganSpriteSheet, spriteSheetUrl)
+    game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
     game.contentLoaded.listen(function(){
-        room.sprite = new SprigganSprite(game.backgroundGroup, game.contentManager, spriteSheetUrl, function(){
+        room.sprite = new SprigganSprite(game.backgroundGroup, game.contentManager, "rooms/rooms", function(){
             game.roomClicked(room)
         })
-        room.sprite.loop(name)
+        room.sprite.move(room.x * 64, room.y * 64)
+        room.sprite.loop("room")
     })
 }
 
 // A Room which changes the room when all party members are inside.
-function Door(game, spriteSheetUrl, name, x, y, roomPath) {
-    Room.call(this, game, spriteSheetUrl, name, x, y)
+function Door(game, spriteSheetUrl, x, y, roomPath) {
+    Room.call(this, game, spriteSheetUrl, x, y)
     this.arrived.listen(function() {
         game.dispose()
         game.savegame.roomPath = roomPath
@@ -27,7 +28,7 @@ function Door(game, spriteSheetUrl, name, x, y, roomPath) {
     })
 }
 
-// Given a destination room, returns the room to move to.
+// Given a destination room, returns the link to follow to reach it.
 // Throws errors when the destination room is inaccessible or this room.
 Room.prototype.navigateTo = function(navigateTo) {
     if (navigateTo == this) throw new Error("You are already in this room")
@@ -63,17 +64,17 @@ Room.prototype.navigateTo = function(navigateTo) {
             var best = Infinity
             
             for (var i = 0; i < node.links.length; i++) {
-                var linkDistance = Recurse(node.links[i].toRoom, distance + node.links[i].length)
+                var linkDistance = Recurse(node.links[i].roomOpposite(node), distance + 1)
                 if (linkDistance < best) best = linkDistance
             }
             
             return best
         }
         
-        var dist = Recurse(this.links[i].toRoom, this.links[i].length)
+        var dist = Recurse(this.links[i].roomOpposite(this), 1)
         if (dist >= best) continue
         best = dist
-        bestOption = this.links[i].toRoom
+        bestOption = this.links[i]
     }
     
     if (bestOption) return bestOption
@@ -81,14 +82,94 @@ Room.prototype.navigateTo = function(navigateTo) {
     throw new Error("No route found")
 }
 
-// Represents a one-way link between two Rooms.
-// Flags is an array of strings such as ["flagName"].
-// You can then test for these using if (link.flags.flagName).
-function Link(fromRoom, toRoom, flags) {
-    this.fromRoom = fromRoom
-    this.toRoom = toRoom
-    this.length = Math.sqrt(((toRoom.x - fromRoom.x) * (toRoom.x - fromRoom.x)) + ((toRoom.y - fromRoom.y) * (toRoom.y - fromRoom.y)))
-    this.flags = {}
-    for (var i = 0; i < flags.length; i++) this.flags[flags[i]] = true
-    fromRoom.links.push(this)
+function MakeLink(type) {
+    type.prototype.roomOpposite = function(room) {
+        return room == this.fromRoom ? this.toRoom : this.fromRoom
+    }
+    
+    type.prototype.enteredBy = function(character) {}
+    type.prototype.leftBy = function(character) {}
+}
+
+function Door(fromRoom, toRoom) {
+    var door = this
+    door.users = 0
+    door.fromRoom = fromRoom
+    door.fromRoom.links.push(door)
+    door.toRoom = toRoom
+    door.toRoom.links.push(door)
+    door.game = toRoom.game
+    door.game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
+    door.animationPrefix = "door" + (fromRoom.x == toRoom.x ? "Vertical" : "Horizontal")
+    door.game.contentLoaded.listen(function() {
+        door.sprite = new SprigganSprite(door.game.backgroundOverlayGroup, door.game.contentManager, "rooms/rooms")
+        door.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
+        door.sprite.loop(door.animationPrefix + "Closed")
+    })
+}
+
+MakeLink(Door)
+
+Door.prototype.enteredBy = function(character) {
+    var door = this
+    if (!door.users) door.sprite.play(door.animationPrefix + "Opening", function() {
+        door.sprite.loop(door.animationPrefix + "Opened")
+    })
+    door.users++
+}
+
+Door.prototype.leftBy = function(character) {
+    var door = this
+    door.users--
+    if (!door.users) door.sprite.play(door.animationPrefix + "Closing", function() {
+        door.sprite.loop(door.animationPrefix + "Closed")
+    })
+}
+
+function Arch(fromRoom, toRoom) {
+    var arch = this
+    arch.fromRoom = fromRoom
+    arch.fromRoom.links.push(arch)
+    arch.toRoom = toRoom
+    arch.toRoom.links.push(arch)
+    arch.game = toRoom.game
+    arch.game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
+    arch.game.contentLoaded.listen(function() {
+        arch.sprite = new SprigganSprite(arch.game.backgroundOverlayGroup, arch.game.contentManager, "rooms/rooms")
+        arch.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
+        arch.sprite.loop("arch" + (fromRoom.x == toRoom.x ? "Vertical" : "Horizontal"))
+    })
+}
+
+MakeLink(Arch)
+
+function Ledge(fromRoom, toRoom) {
+    var ledge = this
+    ledge.fromRoom = fromRoom
+    ledge.fromRoom.links.push(ledge)
+    ledge.toRoom = toRoom
+    ledge.game = toRoom.game
+    ledge.game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
+    ledge.game.contentLoaded.listen(function() {
+        ledge.sprite = new SprigganSprite(ledge.game.backgroundOverlayGroup, ledge.game.contentManager, "rooms/rooms")
+        ledge.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
+        if (toRoom.y < fromRoom.y) ledge.sprite.loop("ledgeUp")
+        if (toRoom.y > fromRoom.y) ledge.sprite.loop("ledgeDown")
+        if (toRoom.x < fromRoom.x) ledge.sprite.loop("ledgeLeft")
+        if (toRoom.x > fromRoom.x) ledge.sprite.loop("ledgeRight")
+    })
+}
+
+MakeLink(Ledge)
+
+function Window(room, position) {
+    var window = this
+    window.room = room
+    window.game = room.game
+    window.game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
+    window.game.contentLoaded.listen(function() {
+        window.sprite = new SprigganSprite(window.game.backgroundOverlayGroup, window.game.contentManager, "rooms/rooms")
+        window.sprite.move(room.x * 64, room.y * 64)
+        window.sprite.loop("window" + position[0].toUpperCase() + position.slice(1))
+    })
 }

@@ -6,7 +6,7 @@ var Items = {
                 var thrown = new SprigganSprite(character.room.game.effectsGroup, sharedContent, "items/icons")
                 thrown.loop("wrench")
                 thrown.move(character.group.x(), character.group.y())
-                thrown.moveAtPixelsPerSecond(room.x, room.y, 500, function() {
+                thrown.moveAtPixelsPerSecond(room.x * 64, room.y * 64, 500, function() {
                     thrown.dispose()
                     new ItemPickup(room, "wrench")
                 })
@@ -28,6 +28,6 @@ function ItemPickup(room, itemName) {
             room.arrived.unlisten(PerformPickup)
         }
         itemPickup.sprite.loop("wrench")
-        itemPickup.sprite.move(room.x, room.y)
+        itemPickup.sprite.move(room.x * 64, room.y * 64)
     })
 }

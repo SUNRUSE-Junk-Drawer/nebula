@@ -25,8 +25,9 @@ function Game(savegame) {
     function LoadedContent() {
         game.viewport = new SprigganViewport(428, 240)
         game.group = new SprigganGroup(game.viewport)
+        game.group.move(214, 88)
         game.backgroundGroup = new SprigganGroup(game.group)
-        game.backgroundGroup.move(214, 120)
+        game.backgroundOverlayGroup = new SprigganGroup(game.group)
         game.itemPickupsGroup = new SprigganGroup(game.group)
         game.markersGroup = new SprigganGroup(game.group)
         game.charactersGroup = new SprigganGroup(game.group)

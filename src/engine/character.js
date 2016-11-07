@@ -12,13 +12,13 @@ function Character(room) {
         character.selectedSprite.hide()
         
         character.sprite = new SprigganSprite(character.group, character.room.game.contentManager, "character", PassClickOn)
-        character.sprite.loop("idleRight")        
+        character.sprite.loop("walkLeft")        
         
         function PassClickOn() {
             character.room.game.characterClicked(character)
         }
         
-        character.group.move(character.room.x, character.room.y)
+        character.group.move(character.room.x * 64, character.room.y * 64)
         
         character.moving = false
         
@@ -50,17 +50,25 @@ Character.prototype.think = function() {
     if (character.moving) return
     
     if (character.room != character.destination) {
-        var next = character.room.navigateTo(character.destination)
-        if (next == null) return
+        var link = character.room.navigateTo(character.destination)
+        if (link == null) return
+        var next = link.roomOpposite(character.room)
         character.room.exited.raise(character)
+        if (next.x > character.room.x) character.sprite.loop("walkRight")
+        if (next.x < character.room.x) character.sprite.loop("walkLeft")
+        if (next.y > character.room.y) character.sprite.loop("walkDown")
+        if (next.y < character.room.y) character.sprite.loop("walkUp")
         character.room = next
         character.moving = true
-        character.group.moveAtPixelsPerSecond(character.room.x, character.room.y, 100, function() {
+        link.enteredBy(character)
+        character.group.moveAtPixelsPerSecond(character.room.x * 64, character.room.y * 64, 100, function() {
+            link.leftBy(character)
             character.moving = false
             character.room.arrived.raise(character)
             character.think()
         })
         character.room.entered.raise(character)
+        
         return
     }
     

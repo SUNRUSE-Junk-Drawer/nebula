@@ -1,43 +1,51 @@
 return function(game) {
     game.contentManager.add(SprigganSpriteSheet, "rooms/tutorial/throwing/atlas")
     
-    var pickup = new Room(game, "rooms/tutorial/throwing/atlas", "pickup", 291, 219)
+    var pickup = new Room(game, 1, 2)
     new ItemPickup(pickup, "wrench")
-    var spawn = new Room(game, "rooms/tutorial/throwing/atlas", "spawn", 256, 174)
+    var spawn = new Room(game, 1, 1)
     
-    new Link(pickup, spawn, ["walkable"])
-    new Link(spawn, pickup, ["walkable"])
+    var pathToDistraction = new Room(game, 0, 1)
+    new Ledge(spawn, pathToDistraction)
     
-    var pathToDistraction = new Room(game, "rooms/tutorial/throwing/atlas", "pathToDistraction", 195, 181)
-    new Link(spawn, pathToDistraction, ["fall"])
+    var distract = new Room(game, -1, 1)
     
-    var distract = new Room(game, "rooms/tutorial/throwing/atlas", "distract", 123, 167)
-    new Link(distract, pathToDistraction, ["walkable"])
-    new Link(pathToDistraction, distract, ["walkable"])
+    new Arch(spawn, pickup)
     
-    var pathToTargetA = new Room(game, "rooms/tutorial/throwing/atlas", "pathToTargetA", 119, 78)
-    new Link(distract, pathToTargetA, ["walkable"])
-    new Link(pathToTargetA, distract, ["walkable"])    
     
-    var pathToTargetB = new Room(game, "rooms/tutorial/throwing/atlas", "pathToTargetB", 168, 49)
-    new Link(pathToTargetB, pathToTargetA, ["walkable"])
-    new Link(pathToTargetA, pathToTargetB, ["walkable"])        
+    new Door(pathToDistraction, distract)
     
-    var pathToTargetC = new Room(game, "rooms/tutorial/throwing/atlas", "pathToTargetC", 249, 47)
-    new Link(pathToTargetB, pathToTargetC, ["walkable"])
-    new Link(pathToTargetC, pathToTargetB, ["walkable"])            
+    var pathToTargetA = new Room(game, -1, 0)
     
-    var pathToTargetD = new Room(game, "rooms/tutorial/throwing/atlas", "pathToTargetD", 307, 56)
-    new Link(pathToTargetD, pathToTargetC, ["walkable"])
-    new Link(pathToTargetC, pathToTargetD, ["walkable"])            
+    new Arch(distract, pathToTargetA)
     
-    var target = new Room(game, "rooms/tutorial/throwing/atlas", "target", 316, 110)
-    new Link(pathToTargetD, target, ["walkable"])
-    new Link(target, pathToTargetD, ["walkable"])        
+    var pathToTargetB = new Room(game, -1, -1)
+    
+    new Arch(pathToTargetA, pathToTargetB)
+    
+    var pathToTargetC = new Room(game, 0, -1)
+    
+    new Arch(pathToTargetB, pathToTargetC)
+    
+    var pathToTargetD = new Room(game, 1, -1)
+    
+    new Arch(pathToTargetC, pathToTargetD)          
+    
+    var target = new Room(game, 1, 0)
+    new Ledge(spawn, target)
+    
+    new Arch(pathToTargetD, target)
+    
+    //new Link(pathToTargetD, target, ["walkable"])
+    //new Link(target, pathToTargetD, ["walkable"])        
 
-    var exit = new Door(game, "rooms/tutorial/throwing/atlas", "exit", 52, 185, "tutorial/combat")
-    new Link(distract, exit, ["walkable"])
-    new Link(exit, distract, ["walkable"])        
+    //var exit = new Door(game, -3, 1, "tutorial/combat")
+    //new Link(distract, exit, ["walkable"])
+    //new Link(exit, distract, ["walkable"])   
+
+    new Window(pathToTargetB, "top")
+    new Window(pathToTargetC, "top")
+    new Window(pathToTargetD, "top")
     
     game.spawnRoom = spawn    
 }
