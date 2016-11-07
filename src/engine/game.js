@@ -32,6 +32,7 @@ function Game(savegame) {
         game.markersGroup = new SprigganGroup(game.group)
         game.charactersGroup = new SprigganGroup(game.group)
         game.effectsGroup = new SprigganGroup(game.group)
+        game.foregroundGroup = new SprigganGroup(game.group)
 
         game.contentLoaded.raise()
         

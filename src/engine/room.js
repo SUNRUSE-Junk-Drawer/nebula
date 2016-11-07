@@ -105,6 +105,10 @@ function Door(fromRoom, toRoom) {
         door.sprite = new SprigganSprite(door.game.backgroundOverlayGroup, door.game.contentManager, "rooms/rooms")
         door.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
         door.sprite.loop(door.animationPrefix + "Closed")
+        
+        door.foregroundSprite = new SprigganSprite(door.game.foregroundGroup, door.game.contentManager, "rooms/rooms")
+        door.foregroundSprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
+        door.foregroundSprite.loop(door.animationPrefix + "Foreground")
     })
 }
 
