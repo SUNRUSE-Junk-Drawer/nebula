@@ -1,39 +1,24 @@
-function Character(room) {
+function Character(room, clicked) {
     var character = this
     character.room = room
     character.destination = room
     character.room.game.contentManager.add(SprigganSpriteSheet, "character")
+    character.contentLoaded = new SprigganEventOnce()
     
     character.room.game.contentLoaded.listen(function(){
         character.group = new SprigganGroup(character.room.game.charactersGroup)
         
-        character.selectedSprite = new SprigganSprite(character.group, character.room.game.contentManager, "battle", PassClickOn)
-        character.selectedSprite.loop("selected")
-        character.selectedSprite.hide()
-        
-        character.sprite = new SprigganSprite(character.group, character.room.game.contentManager, "character", PassClickOn)
+        character.sprite = new SprigganSprite(character.group, character.room.game.contentManager, "character", clicked)
         character.sprite.loop("walkLeft")        
         
-        function PassClickOn() {
-            character.room.game.characterClicked(character)
-        }
-        
         character.group.move(character.room.x * 64, character.room.y * 64)
+        
+        character.contentLoaded.raise()
         
         character.moving = false
         
         character.room.entered.raise(character)
-        character.room.game.orderGiven.listen(function(){
-            character.think()
-        })
-        
-        character.room.game.selectedCharacterChanged.listen(function(selected){
-            if (character == selected)
-                character.selectedSprite.show()
-            else
-                character.selectedSprite.hide()
-        })
-        
+
         character.think()  
     })
 }

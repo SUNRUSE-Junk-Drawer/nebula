@@ -4,8 +4,8 @@ function Game(savegame) {
     game.savegame = savegame
     game.interactionMode = "command"
     game.interactionModeChanged = new SprigganEventRecurring()
-    game.selectedCharacter = null
-    game.selectedCharacterChanged = new SprigganEventRecurring()
+    game.selectedPartyMember = null
+    game.selectedPartyMemberChanged = new SprigganEventRecurring()
     game.contentLoaded = new SprigganEventOnce()
     game.orderGiven = new SprigganEventRecurring()
     game.orders = []
@@ -18,7 +18,7 @@ function Game(savegame) {
         game.contentManager.add(SprigganSpriteSheet, "battle")
         
         roomScriptContentManager.get(SprigganJavaScript, "rooms/" + savegame.roomPath + "/script.js")(game)
-        new Character(game.spawnRoom)
+        new PartyMember(game.spawnRoom)
         roomScriptContentManager.dispose()
     }
     
@@ -64,24 +64,41 @@ Game.prototype.roomClicked = function(room) {
             game.targetingCallback(room)
             break
         case "command":
-            if (game.selectedCharacter) {
-                game.selectedCharacter.setDestination(room)
-                game.selectCharacter(null)
+            if (game.selectedPartyMember) {
+                game.selectedPartyMember.character.setDestination(room)
+                game.selectPartyMember(null)
             }
             break
     }
 }
 
-Game.prototype.characterClicked = function(character) {
+Game.prototype.partyMemberClicked = function(partyMember) {
     var game = this
     switch (game.interactionMode) {
         case "targetRoom":
             game.interactionMode = "command"
             game.interactionModeChanged.raise("command")
-            game.targetingCallback(character.room)
+            game.targetingCallback(partyMember.character.room)
             break
         case "command":
-            game.selectCharacter(character == game.selectedCharacter ? null : character)
+            game.selectPartyMember(partyMember == game.selectedPartyMember ? null : partyMember)
+            break
+    }
+}
+
+Game.prototype.enemyClicked = function(enemy) {
+    var game = this
+    switch (game.interactionMode) {
+        case "targetRoom":
+            game.interactionMode = "command"
+            game.interactionModeChanged.raise("command")
+            game.targetingCallback(enemy.room)
+            break
+        case "command":
+            if (game.selectedPartyMember) {
+                game.selectedPartyMember.character.setDestination(enemy.character.room)
+                game.selectPartyMember(null)
+            }
             break
     }
 }
@@ -95,9 +112,9 @@ Game.prototype.itemPickupClicked = function(item) {
             game.targetingCallback(item.room)
             break
         case "command":
-            if (game.selectedCharacter) {
-                game.selectedCharacter.setDestination(item.room)
-                game.selectCharacter(null)
+            if (game.selectedPartyMember) {
+                game.selectedPartyMember.character.setDestination(item.room)
+                game.selectPartyMember(null)
             }
             break
     }
@@ -108,8 +125,8 @@ Game.prototype.giveOrder = function(callback) {
     this.orderGiven.raise()
 }
 
-Game.prototype.selectCharacter = function(character) {
+Game.prototype.selectPartyMember = function(partyMember) {
     var game = this
-    game.selectedCharacter = character
-    game.selectedCharacterChanged.raise(character)
+    game.selectedPartyMember = partyMember
+    game.selectedPartyMemberChanged.raise(partyMember)
 }

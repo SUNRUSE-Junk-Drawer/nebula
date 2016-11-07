@@ -48,4 +48,6 @@ return function(game) {
     new Window(pathToTargetD, "top")
     
     game.spawnRoom = spawn    
+    
+    new Enemy(distract)
 }
