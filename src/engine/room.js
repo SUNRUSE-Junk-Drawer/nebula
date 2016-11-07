@@ -4,7 +4,7 @@ function Room(game, x, y) {
     room.game = game
     room.x = x
     room.y = y
-    room.links = []
+    room.links = {}
     room.entered = new SprigganEventRecurring()
     room.exited = new SprigganEventRecurring()
     room.arrived = new SprigganEventRecurring()
@@ -37,44 +37,46 @@ Room.prototype.navigateTo = function(navigateTo) {
     var bestOption = null
     
     // Floodfill from each link from this room.
-    for (var i = 0; i < this.links.length; i++) {
+    for (var key in this.links) {
         var checked = [{
             room: this,
             distance: 0
         }]
         
-        function Recurse(node, distance) {
-            if (node == navigateTo) return distance
+        function Recurse(fromRoom, link, distance) {
+            if (!link.walkable(fromRoom)) return Infinity
+            var toRoom = link.roomOpposite(fromRoom)
+            if (toRoom == navigateTo) return distance
             
             var obj, i
             
             for (i = 0; i < checked.length; i++) {
                 obj = checked[i]
-                if (obj.room != node) continue
+                if (obj.room != toRoom) continue
                 if (obj.distance <= distance) return Infinity
                 obj.distance = distance
                 break
             }
             
             if (i == checked.length) {
-                obj = { room: node, distance: distance }
+                obj = { room: toRoom, distance: distance }
                 checked.push(obj)
             }
             
             var best = Infinity
             
-            for (var i = 0; i < node.links.length; i++) {
-                var linkDistance = Recurse(node.links[i].roomOpposite(node), distance + 1)
+            for (var key in toRoom.links) {
+                var linkDistance = Recurse(toRoom, toRoom.links[key], distance + 1)
                 if (linkDistance < best) best = linkDistance
             }
             
             return best
         }
         
-        var dist = Recurse(this.links[i].roomOpposite(this), 1)
+        var dist = Recurse(this, this.links[key], 1)
         if (dist >= best) continue
         best = dist
-        bestOption = this.links[i]
+        bestOption = this.links[key]
     }
     
     if (bestOption) return bestOption
@@ -89,18 +91,47 @@ function MakeLink(type) {
     
     type.prototype.enteredBy = function(character) {}
     type.prototype.leftBy = function(character) {}
+    
+    type.prototype.linkToRooms = function() {
+        if (this.fromRoom.y == this.toRoom.y) {
+            this.orientation = "horizontal"
+            if (this.fromRoom.x > this.toRoom.x) {
+                this.direction = "left"
+                this.fromRoom.links.left = this
+                this.toRoom.links.right = this
+            } else {
+                this.direction = "right"
+                this.fromRoom.links.right = this
+                this.toRoom.links.left = this            
+            }
+        } else {
+            this.orientation = "vertical"
+            if (this.fromRoom.y > this.toRoom.y) {
+                this.direction = "up"
+                this.fromRoom.links.up = this
+                this.toRoom.links.down = this
+            } else {
+                this.direction = "down"
+                this.fromRoom.links.down = this
+                this.toRoom.links.up = this            
+            }
+            return "Horizontal"
+        }
+    }
 }
 
 function Door(fromRoom, toRoom) {
     var door = this
     door.users = 0
     door.fromRoom = fromRoom
-    door.fromRoom.links.push(door)
     door.toRoom = toRoom
-    door.toRoom.links.push(door)
+    door.linkToRooms()
+    
+    door.animationPrefix = "door" + Capitalize(door.orientation)
+    
     door.game = toRoom.game
     door.game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
-    door.animationPrefix = "door" + (fromRoom.x == toRoom.x ? "Vertical" : "Horizontal")
+    
     door.game.contentLoaded.listen(function() {
         door.sprite = new SprigganSprite(door.game.backgroundOverlayGroup, door.game.contentManager, "rooms/rooms")
         door.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
@@ -130,41 +161,49 @@ Door.prototype.leftBy = function(character) {
     })
 }
 
+Door.prototype.walkable = function(fromRoom) {
+    return true
+}
+
 function Arch(fromRoom, toRoom) {
     var arch = this
     arch.fromRoom = fromRoom
-    arch.fromRoom.links.push(arch)
     arch.toRoom = toRoom
-    arch.toRoom.links.push(arch)
+    arch.linkToRooms()
     arch.game = toRoom.game
     arch.game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
     arch.game.contentLoaded.listen(function() {
         arch.sprite = new SprigganSprite(arch.game.backgroundOverlayGroup, arch.game.contentManager, "rooms/rooms")
         arch.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
-        arch.sprite.loop("arch" + (fromRoom.x == toRoom.x ? "Vertical" : "Horizontal"))
+        arch.sprite.loop("arch" + Capitalize(arch.orientation))
     })
 }
 
 MakeLink(Arch)
 
+Arch.prototype.walkable = function(fromRoom) {
+    return true
+}
+
 function Ledge(fromRoom, toRoom) {
     var ledge = this
     ledge.fromRoom = fromRoom
-    ledge.fromRoom.links.push(ledge)
     ledge.toRoom = toRoom
+    ledge.linkToRooms()
     ledge.game = toRoom.game
     ledge.game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
     ledge.game.contentLoaded.listen(function() {
         ledge.sprite = new SprigganSprite(ledge.game.backgroundOverlayGroup, ledge.game.contentManager, "rooms/rooms")
         ledge.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
-        if (toRoom.y < fromRoom.y) ledge.sprite.loop("ledgeUp")
-        if (toRoom.y > fromRoom.y) ledge.sprite.loop("ledgeDown")
-        if (toRoom.x < fromRoom.x) ledge.sprite.loop("ledgeLeft")
-        if (toRoom.x > fromRoom.x) ledge.sprite.loop("ledgeRight")
+        ledge.sprite.loop("ledge" + Capitalize(ledge.direction))
     })
 }
 
 MakeLink(Ledge)
+
+Ledge.prototype.walkable = function(fromRoom) {
+    return fromRoom == this.fromRoom
+}
 
 function Window(room, position) {
     var window = this
