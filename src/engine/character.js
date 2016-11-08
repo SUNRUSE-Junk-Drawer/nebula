@@ -3,6 +3,7 @@ function Character(faction, room, clicked) {
     character.faction = faction
     character.room = room
     character.destination = room
+    character.room.characters.push(character)
     character.room.game.contentManager.add(SprigganSpriteSheet, "character")
     character.contentLoaded = new SprigganEventOnce()
     
@@ -44,6 +45,8 @@ Character.prototype.think = function() {
         if (next.x < character.room.x) character.sprite.loop("walkLeft")
         if (next.y > character.room.y) character.sprite.loop("walkDown")
         if (next.y < character.room.y) character.sprite.loop("walkUp")
+        SprigganRemoveByValue(character.room.characters, character)
+        next.characters.push(character)
         character.room = next
         character.moving = true
         link.enteredBy(character)

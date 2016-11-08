@@ -8,6 +8,7 @@ function Room(game, x, y) {
     room.entered = new SprigganEventRecurring()
     room.exited = new SprigganEventRecurring()
     room.arrived = new SprigganEventRecurring()
+    room.characters = []
     game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
     game.contentLoaded.listen(function(){
         room.sprite = new SprigganSprite(game.backgroundGroup, game.contentManager, "rooms/rooms", function(){
