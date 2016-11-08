@@ -1,5 +1,6 @@
-function Character(room, clicked) {
+function Character(faction, room, clicked) {
     var character = this
+    character.faction = faction
     character.room = room
     character.destination = room
     character.room.game.contentManager.add(SprigganSpriteSheet, "character")

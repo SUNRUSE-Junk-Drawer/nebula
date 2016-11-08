@@ -10,6 +10,10 @@ function Game(savegame) {
     game.orderGiven = new SprigganEventRecurring()
     game.orders = []
     
+    game.partyFaction = new Faction()
+    game.enemyFaction = new Faction()
+    new Animosity(game.partyFaction, game.enemyFaction)
+    
     var roomScriptContentManager = new SprigganContentManager({ loaded: LoadedRoomScript })
     roomScriptContentManager.add(SprigganJavaScript, "rooms/" + savegame.roomPath + "/script.js")
     

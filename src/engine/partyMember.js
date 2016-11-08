@@ -3,7 +3,7 @@ function PartyMember(room) {
     partyMember.game = room.game
     partyMember.game.contentManager.add(SprigganSpriteSheet, "battle")
     
-    partyMember.character = new Character(room, Clicked)
+    partyMember.character = new Character(partyMember.game.partyFaction, room, Clicked)
     
     function Clicked() {
         partyMember.game.partyMemberClicked(partyMember)
