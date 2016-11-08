@@ -85,6 +85,26 @@ Room.prototype.navigateTo = function(navigateTo) {
     throw new Error("No route found")
 }
 
+Room.prototype.emitLineOfSight = function(distance, waistHigh, callback) {
+    var room = this
+    callback(room)
+    
+    for (var key in room.links) {
+        var fromRoom = room
+        var link = room.links[key]
+        var travelled = 0
+        while (link) {
+            if (travelled++ > distance) break
+            if (link.blocksLineOfSight(fromRoom)) break
+            if (waistHigh && link.blocksLineOfSightBelowWaist(fromRoom)) break
+            var nextRoom = link.roomOpposite(fromRoom)
+            callback(nextRoom)
+            link = nextRoom.links[key]
+            fromRoom = nextRoom
+        }
+    }
+}
+
 function MakeLink(type) {
     type.prototype.roomOpposite = function(room) {
         return room == this.fromRoom ? this.toRoom : this.fromRoom
@@ -92,6 +112,14 @@ function MakeLink(type) {
     
     type.prototype.enteredBy = function(character) {}
     type.prototype.leftBy = function(character) {}
+    
+    type.prototype.blocksLineOfSight = function(fromRoom) {
+        return false
+    }
+
+    type.prototype.blocksLineOfSightBelowWaist = function(fromRoom) {
+        return false
+    }
     
     type.prototype.linkToRooms = function() {
         if (this.fromRoom.y == this.toRoom.y) {
@@ -164,6 +192,10 @@ Door.prototype.leftBy = function(character) {
 
 Door.prototype.walkable = function(fromRoom) {
     return true
+}
+
+Door.prototype.blocksLineOfSight = function(fromRoom) {
+    return !this.users
 }
 
 function Arch(fromRoom, toRoom) {
