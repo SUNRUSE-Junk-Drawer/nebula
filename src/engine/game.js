@@ -96,7 +96,7 @@ Game.prototype.enemyClicked = function(enemy) {
         case "targetRoom":
             game.interactionMode = "command"
             game.interactionModeChanged.raise("command")
-            game.targetingCallback(enemy.room)
+            game.targetingCallback(enemy.character.room)
             break
         case "command":
             if (game.selectedPartyMember) {
