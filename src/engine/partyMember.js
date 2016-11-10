@@ -6,23 +6,19 @@ function PartyMember(room) {
     partyMember.character = new Character(partyMember.game.partyFaction, room, Clicked)
     
     function Clicked() {
-        partyMember.game.partyMemberClicked(partyMember)
+        partyMember.game.mode.clicked(partyMember)
     }
     
-    partyMember.character.contentLoaded.listen(function() {
-        partyMember.selectedSprite = new SprigganSprite(partyMember.character.group, partyMember.game.contentManager, "battle", Clicked)
-        partyMember.selectedSprite.loop("selected")
-        partyMember.selectedSprite.hide()
-    })
+    // partyMember.character.contentLoaded.listen(function() {
+        // partyMember.selectedSprite = new SprigganSprite(partyMember.character.group, partyMember.game.contentManager, "battle", Clicked)
+        // partyMember.selectedSprite.loop("selected")
+        // partyMember.selectedSprite.hide()
+    // })
     
-    partyMember.game.selectedPartyMemberChanged.listen(function(selected){        
-        if (partyMember == selected)
-            partyMember.selectedSprite.show()
-        else
-            partyMember.selectedSprite.hide()
-    })
-    
-    partyMember.game.orderGiven.listen(function(){
-        partyMember.character.think()
-    })
+    // partyMember.game.selectedPartyMemberChanged.listen(function(selected){        
+        // if (partyMember == selected)
+            // partyMember.selectedSprite.show()
+        // else
+            // partyMember.selectedSprite.hide()
+    // })
 }

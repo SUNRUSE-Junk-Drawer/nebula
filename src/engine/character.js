@@ -2,6 +2,7 @@ function Character(faction, room, clicked) {
     var character = this
     character.faction = faction
     character.room = room
+    character.direction = "down"
     character.destination = room
     character.room.characters.push(character)
     character.room.game.contentManager.add(SprigganSpriteSheet, "character")
@@ -11,7 +12,7 @@ function Character(faction, room, clicked) {
         character.group = new SprigganGroup(character.room.game.charactersGroup)
         
         character.sprite = new SprigganSprite(character.group, character.room.game.contentManager, "character", clicked)
-        character.sprite.loop("walkLeft")        
+        character.sprite.loop("idle" + Capitalize(character.direction))
         
         character.group.move(character.room.x * 64, character.room.y * 64)
         
@@ -37,14 +38,13 @@ Character.prototype.think = function() {
     if (character.moving) return
     
     if (character.room != character.destination) {
-        var link = character.room.navigateTo(character.destination)
-        if (link == null) return
+        var newDirection = character.room.navigateTo(character.destination)
+        if (!newDirection) return
+        character.direction = newDirection
+        var link = character.room.links[newDirection]
         var next = link.roomOpposite(character.room)
         character.room.exited.raise(character)
-        if (next.x > character.room.x) character.sprite.loop("walkRight")
-        if (next.x < character.room.x) character.sprite.loop("walkLeft")
-        if (next.y > character.room.y) character.sprite.loop("walkDown")
-        if (next.y < character.room.y) character.sprite.loop("walkUp")
+        character.sprite.loop("walk" + Capitalize(character.direction))
         SprigganRemoveByValue(character.room.characters, character)
         next.characters.push(character)
         character.room = next
@@ -61,10 +61,7 @@ Character.prototype.think = function() {
         return
     }
     
-    if (character.room.game.orders.length) {
-        character.room.game.orders.pop()(character)
-        character.think()
-    }
+    character.sprite.loop("idle" + Capitalize(character.direction))
 }
 
 Character.prototype.say = function(text, horizontalAlignment, verticalAlignment) {

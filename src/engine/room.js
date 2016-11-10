@@ -12,7 +12,7 @@ function Room(game, x, y) {
     game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
     game.contentLoaded.listen(function(){
         room.sprite = new SprigganSprite(game.backgroundGroup, game.contentManager, "rooms/rooms", function(){
-            game.roomClicked(room)
+            room.game.mode.clicked(room)
         })
         room.sprite.move(room.x * 64, room.y * 64)
         room.sprite.loop("room")
@@ -29,7 +29,7 @@ function Door(game, spriteSheetUrl, x, y, roomPath) {
     })
 }
 
-// Given a destination room, returns the link to follow to reach it.
+// Given a destination room, returns the direction in which to go to reach it.
 // Throws errors when the destination room is inaccessible or this room.
 Room.prototype.navigateTo = function(navigateTo) {
     if (navigateTo == this) throw new Error("You are already in this room")
@@ -77,7 +77,7 @@ Room.prototype.navigateTo = function(navigateTo) {
         var dist = Recurse(this, this.links[key], 1)
         if (dist >= best) continue
         best = dist
-        bestOption = this.links[key]
+        bestOption = key
     }
     
     if (bestOption) return bestOption

@@ -5,6 +5,6 @@ function Enemy(room) {
     enemy.character = new Character(enemy.game.enemyFaction, room, Clicked)
     
     function Clicked() {
-        enemy.game.enemyClicked(enemy)
+        enemy.game.mode.clicked(enemy)
     }
 }

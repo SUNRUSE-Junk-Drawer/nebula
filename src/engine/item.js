@@ -20,7 +20,7 @@ function ItemPickup(room, itemName) {
     itemPickup.room = room
     room.game.contentLoaded.listen(function(){
         itemPickup.sprite = new SprigganSprite(room.game.itemPickupsGroup, sharedContent, "items/icons", function(){
-            room.game.itemPickupClicked(itemPickup)
+            room.game.mode.clicked(itemPickup)
         })
         room.arrived.listen(PerformPickup)
         function PerformPickup(){

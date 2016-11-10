@@ -4,11 +4,8 @@ function Game(savegame) {
     game.savegame = savegame
     game.interactionMode = "command"
     game.interactionModeChanged = new SprigganEventRecurring()
-    game.selectedPartyMember = null
-    game.selectedPartyMemberChanged = new SprigganEventRecurring()
     game.contentLoaded = new SprigganEventOnce()
-    game.orderGiven = new SprigganEventRecurring()
-    game.orders = []
+    game.setMode(new CombatMode())
     
     game.partyFaction = new Faction()
     game.enemyFaction = new Faction()
@@ -52,85 +49,44 @@ Game.prototype.dispose = function() {
     this.playPause.dispose()
 }
 
-Game.prototype.targetRoom = function(callback) {
-    var game = this
-    game.targetingCallback = callback
-    game.interactionMode = "targetRoom"
-    game.interactionModeChanged.raise("targetRoom")
+Game.prototype.setMode = function(mode) {
+    if (this.mode) this.mode.left()
+    this.mode = mode
+    mode.game = this
 }
 
-Game.prototype.roomClicked = function(room) {
-    var game = this
-    switch (game.interactionMode) {
-        case "targetRoom":
-            game.interactionMode = "command"
-            game.interactionModeChanged.raise("command")
-            game.targetingCallback(room)
-            break
-        case "command":
-            if (game.selectedPartyMember) {
-                game.selectedPartyMember.character.setDestination(room)
-                game.selectPartyMember(null)
-            }
-            break
+function CombatMode() { }
+
+CombatMode.prototype.clicked = function(clicked) {
+    if (clicked instanceof PartyMember) this.game.setMode(new PartyMemberSelectedMode(clicked))
+}
+
+CombatMode.prototype.left = function() {}
+
+function PartyMemberSelectedMode(partyMember) { 
+    this.partyMember = partyMember
+    this.sprite = new SprigganSprite(this.partyMember.character.group, this.partyMember.game.contentManager, "battle", function() {
+        partyMember.game.mode.clicked(partyMember)
+    })
+    this.sprite.loop("selected")
+}
+
+PartyMemberSelectedMode.prototype.clicked = function(clicked) {
+    if (clicked == this.partyMember) {
+        this.game.setMode(new CombatMode())
+    } else if (clicked instanceof PartyMember) {
+        this.game.setMode(new PartyMemberSelectedMode(clicked))
+    } else {
+        var room
+        if (clicked instanceof Room) room = clicked
+        if (clicked instanceof Enemy) room = clicked.character.room
+        if (clicked instanceof ItemPickup) room = clicked.room
+        if (!room) return
+        this.partyMember.character.setDestination(room)
+        this.game.setMode(new CombatMode())
     }
 }
 
-Game.prototype.partyMemberClicked = function(partyMember) {
-    var game = this
-    switch (game.interactionMode) {
-        case "targetRoom":
-            game.interactionMode = "command"
-            game.interactionModeChanged.raise("command")
-            game.targetingCallback(partyMember.character.room)
-            break
-        case "command":
-            game.selectPartyMember(partyMember == game.selectedPartyMember ? null : partyMember)
-            break
-    }
-}
-
-Game.prototype.enemyClicked = function(enemy) {
-    var game = this
-    switch (game.interactionMode) {
-        case "targetRoom":
-            game.interactionMode = "command"
-            game.interactionModeChanged.raise("command")
-            game.targetingCallback(enemy.character.room)
-            break
-        case "command":
-            if (game.selectedPartyMember) {
-                game.selectedPartyMember.character.setDestination(enemy.character.room)
-                game.selectPartyMember(null)
-            }
-            break
-    }
-}
-
-Game.prototype.itemPickupClicked = function(item) {
-    var game = this
-    switch (game.interactionMode) {
-        case "targetRoom":
-            game.interactionMode = "command"
-            game.interactionModeChanged.raise("command")
-            game.targetingCallback(item.room)
-            break
-        case "command":
-            if (game.selectedPartyMember) {
-                game.selectedPartyMember.character.setDestination(item.room)
-                game.selectPartyMember(null)
-            }
-            break
-    }
-}
-
-Game.prototype.giveOrder = function(callback) {
-    this.orders.push(callback)
-    this.orderGiven.raise()
-}
-
-Game.prototype.selectPartyMember = function(partyMember) {
-    var game = this
-    game.selectedPartyMember = partyMember
-    game.selectedPartyMemberChanged.raise(partyMember)
+PartyMemberSelectedMode.prototype.left = function() {
+    this.sprite.dispose()
 }
