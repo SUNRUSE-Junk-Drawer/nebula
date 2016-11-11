@@ -65,9 +65,7 @@ CombatMode.prototype.left = function() {}
 
 function PartyMemberSelectedMode(partyMember) { 
     this.partyMember = partyMember
-    this.sprite = new SprigganSprite(this.partyMember.character.group, this.partyMember.game.contentManager, "battle", function() {
-        partyMember.game.mode.clicked(partyMember)
-    })
+    this.sprite = new SprigganSprite(this.partyMember.character.group, this.partyMember.game.contentManager, "battle")
     this.sprite.loop("selected")
 }
 
