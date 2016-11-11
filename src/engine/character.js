@@ -1,18 +1,21 @@
-function Character(faction, room, clicked) {
+function Character(faction, room, layerNames, clicked) {
     var character = this
     character.faction = faction
     character.room = room
-    character.direction = "down"
+    character.layerNames = layerNames
+    character.layers = []
     character.destination = room
     character.room.characters.push(character)
     character.room.game.contentManager.add(SprigganSpriteSheet, "character")
     character.contentLoaded = new SprigganEventOnce()
     
     character.room.game.contentLoaded.listen(function(){
-        character.group = new SprigganGroup(character.room.game.charactersGroup)
+        character.group = new SprigganGroup(character.room.game.charactersGroup, clicked)
         
-        character.sprite = new SprigganSprite(character.group, character.room.game.contentManager, "character", clicked)
-        character.sprite.loop("idle" + Capitalize(character.direction))
+        while (character.layers.length < character.layerNames.length) 
+            character.layers.push(new SprigganSprite(character.group, character.room.game.contentManager, "character"))
+        
+        character.loop("idle", "down")
         
         character.group.move(character.room.x * 64, character.room.y * 64)
         
@@ -24,6 +27,22 @@ function Character(faction, room, clicked) {
 
         character.think()  
     })
+}
+
+Character.prototype.play = function(animation, direction, then) {
+    if (direction) this.direction = direction
+    
+    for (var i = 0; i < this.layers.length; i++) {
+        this.layers[i].play(this.layerNames[i] + Capitalize(animation) + Capitalize(this.direction), i == 0 ? then : null)
+    }
+}
+
+Character.prototype.loop = function(animation, direction) {
+    if (direction) this.direction = direction
+    
+    for (var i = 0; i < this.layers.length; i++) {
+        this.layers[i].loop(this.layerNames[i] + Capitalize(animation) + Capitalize(this.direction))
+    }
 }
 
 Character.prototype.setDestination = function(room) {
@@ -40,11 +59,10 @@ Character.prototype.think = function() {
     if (character.room != character.destination) {
         var newDirection = character.room.navigateTo(character.destination)
         if (!newDirection) return
-        character.direction = newDirection
         var link = character.room.links[newDirection]
         var next = link.roomOpposite(character.room)
         character.room.exited.raise(character)
-        character.sprite.loop("walk" + Capitalize(character.direction))
+        character.loop("walk", newDirection)
         SprigganRemoveByValue(character.room.characters, character)
         next.characters.push(character)
         character.room = next
@@ -61,7 +79,7 @@ Character.prototype.think = function() {
         return
     }
     
-    character.sprite.loop("idle" + Capitalize(character.direction))
+    character.loop("idle")
 }
 
 Character.prototype.say = function(text, horizontalAlignment, verticalAlignment) {
