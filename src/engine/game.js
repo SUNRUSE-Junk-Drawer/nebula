@@ -7,6 +7,8 @@ function Game(savegame) {
     game.contentLoaded = new SprigganEventOnce()
     game.setMode(new CombatMode())
     
+    game.characters = []
+    
     game.partyFaction = new Faction()
     game.enemyFaction = new Faction()
     new Animosity(game.partyFaction, game.enemyFaction)

@@ -5,6 +5,7 @@ function Character(faction, room, layerNames, clicked) {
     character.layerNames = layerNames
     character.layers = []
     character.destination = room
+    character.room.game.characters.push(character)
     character.room.characters.push(character)
     character.room.game.contentManager.add(SprigganSpriteSheet, "character")
     character.contentLoaded = new SprigganEventOnce()
