@@ -1,10 +1,12 @@
-function Character(faction, room, layerNames, clicked) {
+function Character(faction, room, legLayerNames, torsoLayerNames, clicked) {
     var character = this
     character.faction = faction
     character.room = room
-    character.layerNames = layerNames
+    character.legLayerNames = legLayerNames
+    character.torsoLayerNames = torsoLayerNames
     character.layers = []
     character.destination = room
+    character.facing = "down"
     character.room.game.characters.push(character)
     character.room.characters.push(character)
     character.room.game.contentManager.add(SprigganSpriteSheet, "character")
@@ -13,10 +15,10 @@ function Character(faction, room, layerNames, clicked) {
     character.room.game.contentLoaded.listen(function(){
         character.group = new SprigganGroup(character.room.game.charactersGroup, clicked)
         
-        while (character.layers.length < character.layerNames.length) 
-            character.layers.push(new SprigganSprite(character.group, character.room.game.contentManager, "character"))
-        
-        character.loop("idle", "down")
+        character.legSpriteGroup = new SpriteGroup(character.group, character.room.game.contentManager, "character", character.legLayerNames)
+        character.legSpriteGroup.loop("idleDown")
+        character.torsoSpriteGroup = new SpriteGroup(character.group, character.room.game.contentManager, "character", character.torsoLayerNames)
+        character.torsoSpriteGroup.loop("idleDown")
         
         character.group.move(character.room.x * 64, character.room.y * 64)
         
@@ -28,22 +30,6 @@ function Character(faction, room, layerNames, clicked) {
 
         character.think()  
     })
-}
-
-Character.prototype.play = function(animation, direction, then) {
-    if (direction) this.direction = direction
-    
-    for (var i = 0; i < this.layers.length; i++) {
-        this.layers[i].play(this.layerNames[i] + Capitalize(animation) + Capitalize(this.direction), i == 0 ? then : null)
-    }
-}
-
-Character.prototype.loop = function(animation, direction) {
-    if (direction) this.direction = direction
-    
-    for (var i = 0; i < this.layers.length; i++) {
-        this.layers[i].loop(this.layerNames[i] + Capitalize(animation) + Capitalize(this.direction))
-    }
 }
 
 Character.prototype.setDestination = function(room) {
@@ -60,10 +46,12 @@ Character.prototype.think = function() {
     if (character.room != character.destination) {
         var newDirection = character.room.navigateTo(character.destination)
         if (!newDirection) return
-        var link = character.room.links[newDirection]
+        character.facing = newDirection
+        var link = character.room.links[character.facing]
         var next = link.roomOpposite(character.room)
         character.room.exited.raise(character)
-        character.loop("walk", newDirection)
+        character.legSpriteGroup.loop("walk" + Capitalize(character.facing))
+        character.torsoSpriteGroup.loop("walk" + Capitalize(character.facing))
         SprigganRemoveByValue(character.room.characters, character)
         next.characters.push(character)
         character.room = next
@@ -80,7 +68,8 @@ Character.prototype.think = function() {
         return
     }
     
-    character.loop("idle")
+    character.legSpriteGroup.loop("idle" + Capitalize(character.facing))
+    character.torsoSpriteGroup.loop("idle" + Capitalize(character.facing))
 }
 
 Character.prototype.say = function(text, horizontalAlignment, verticalAlignment) {
