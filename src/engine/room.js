@@ -105,6 +105,39 @@ Room.prototype.emitLineOfSight = function(distance, waistHigh, callback) {
     }
 }
 
+Room.prototype.getDirectionToRoom = function (toRoom) {
+    if (this.x == toRoom.x) {
+        if (this.y > toRoom.y)
+            return "up"
+        else if (this.y < toRoom.y)
+            return "down"
+    } else if (this.y == toRoom.y) {
+        if (this.x > toRoom.x)
+            return "left"
+        else
+            return "right"
+    }
+    
+    return null
+}
+
+Room.prototype.hasLineOfSightToRoom = function (toRoom, waistHigh) {
+    if (this == toRoom) return true
+    var direction = this.getDirectionToRoom(toRoom)
+    if (!direction) return false
+    
+    var fromRoom = this
+    while (fromRoom != toRoom) {
+        var link = fromRoom.links[direction]
+        if (!link) return false
+        if (link.blocksLineOfSight(fromRoom)) return false
+        if (waistHigh && link.blocksLineOfSightBelowWaist(fromRoom)) return false
+        fromRoom = link.roomOpposite(fromRoom)
+    }
+    
+    return true
+}
+
 function MakeLink(type) {
     type.prototype.roomOpposite = function(room) {
         return room == this.fromRoom ? this.toRoom : this.fromRoom
