@@ -97,7 +97,7 @@ InventorySlot.prototype.refresh = function() {
 }
 
 InventorySlot.prototype.replace = function(withItemName) {
-    this.game.savegame.inventory[this.id] = withItemName
+    this.inventory.game.savegame.inventory[this.id] = withItemName
     this.reserveFor(null)
 }
 
