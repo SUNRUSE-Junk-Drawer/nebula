@@ -43,6 +43,10 @@ Character.prototype.think = function() {
     
     if (character.moving) return
     
+    for (var i = 0; i < character.faction.orders.length; i++) {
+        if (character.faction.orders[i].tryExecute(character)) return
+    }
+    
     if (character.room != character.destination) {
         var newDirection = character.room.navigateTo(character.destination)
         if (!newDirection) return

@@ -1,6 +1,7 @@
 function Faction() {
     var faction = this
     faction.enemyFactions = []
+    faction.orders = []
 }
 
 Faction.prototype.shouldAttack = function(faction) {
