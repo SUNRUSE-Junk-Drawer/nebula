@@ -65,24 +65,43 @@ function InventorySlot(inventory, x, y) {
     inventorySlot.inventory = inventory
     inventorySlot.x = x
     inventorySlot.y = y
+    inventorySlot.reserved = false
     inventorySlot.id = inventory.slots.length
     inventory.slots.push(inventorySlot)
     
-    inventorySlot.sprite = new SprigganSprite(inventory.panelGroup, sharedContent, "items/icons", Clicked)
+    inventorySlot.group = new SprigganGroup(inventory.panelGroup, function() {
+        inventory.game.mode.clicked(inventorySlot)
+    })
     
-    function Clicked() {
-        Items[inventory.game.savegame.inventory[inventorySlot.id]](inventory.game, inventorySlot.id)
-    }
+    inventorySlot.group.move(330 + x * 39, 63 + y * 39)
     
-    inventorySlot.sprite.move(330 + x * 39, 63 + y * 39)
-    
+    inventorySlot.statusSprite = new SprigganSprite(inventorySlot.group, inventory.game.contentManager, "battle")
+    inventorySlot.itemSprite = new SprigganSprite(inventorySlot.group, sharedContent, "items/icons")
+
     inventorySlot.refresh()
 }
 
-InventorySlot.prototype.refresh = function() {
-    var itemName = this.inventory.game.savegame.inventory[this.id]
-    if (itemName) {
-        this.sprite.loop(itemName)
-        this.sprite.show()
-    } else this.sprite.hide()
+InventorySlot.prototype.refresh = function() {    
+    this.itemName = this.inventory.game.savegame.inventory[this.id]
+    if (this.itemName) {
+        this.item = Items[this.itemName]
+        this.itemSprite.loop(this.itemName)
+        this.itemSprite.show()
+        this.statusSprite.loop("inventorySlot" + (this.reservedFor ? Capitalize(this.reservedFor) : "Occupied"))
+        
+    } else {
+        this.item = null
+        this.itemSprite.hide()
+        this.statusSprite.loop("inventorySlotEmpty")
+    }
+}
+
+InventorySlot.prototype.replace = function(withItemName) {
+    this.game.savegame.inventory[this.id] = withItemName
+    this.reserveFor(null)
+}
+
+InventorySlot.prototype.reserveFor = function(actionName) {
+    this.reservedFor = actionName
+    this.refresh()
 }
