@@ -75,8 +75,8 @@ function InventorySlot(inventory, x, y) {
     
     inventorySlot.group.move(330 + x * 39, 63 + y * 39)
     
-    inventorySlot.statusSprite = new SprigganSprite(inventorySlot.group, inventory.game.contentManager, "battle")
     inventorySlot.itemSprite = new SprigganSprite(inventorySlot.group, sharedContent, "items/icons")
+    inventorySlot.statusSprite = new SprigganSprite(inventorySlot.group, inventory.game.contentManager, "battle")
 
     inventorySlot.refresh()
 }
