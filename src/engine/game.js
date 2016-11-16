@@ -5,7 +5,6 @@ function Game(savegame) {
     game.interactionMode = "command"
     game.interactionModeChanged = new SprigganEventRecurring()
     game.contentLoaded = new SprigganEventOnce()
-    game.setMode(new CombatMode())
     
     game.characters = []
     
@@ -41,6 +40,8 @@ function Game(savegame) {
         
         game.inventory = new Inventory(game)
         game.playPause = new PlayPause(game)
+        
+        game.setMode(new CombatMode())
     }
 }
 
@@ -54,6 +55,10 @@ Game.prototype.dispose = function() {
 Game.prototype.setMode = function(mode) {
     if (this.mode) this.mode.left()
     this.mode = mode
+    if (this.mode.showInventory)
+        this.inventory.viewport.show()
+    else
+        this.inventory.viewport.hide()
     mode.game = this
 }
 
@@ -61,7 +66,12 @@ function CombatMode() { }
 
 CombatMode.prototype.clicked = function(clicked) {
     if (clicked instanceof PartyMember) this.game.setMode(new PartyMemberSelectedMode(clicked))
+    if (clicked instanceof InventorySlot) {
+        if (clicked.item["throw"]) this.game.setMode(new ThrowingItemMode(clicked))
+    }
 }
+
+CombatMode.prototype.showInventory = true
 
 CombatMode.prototype.left = function() {}
 
@@ -90,3 +100,45 @@ PartyMemberSelectedMode.prototype.clicked = function(clicked) {
 PartyMemberSelectedMode.prototype.left = function() {
     this.sprite.dispose()
 }
+
+PartyMemberSelectedMode.prototype.showInventory = true
+
+function ThrowingItemMode(inventorySlot) {
+    this.inventorySlot = inventorySlot
+    this.item = this.inventorySlot.item
+}
+
+ThrowingItemMode.prototype.clicked = function(clicked) {
+    var mode = this
+    
+    var room
+    if (clicked instanceof Room) room = clicked
+    if (clicked instanceof Enemy) room = clicked.character.room
+    if (clicked instanceof PartyMember) room = clicked.character.room
+    if (clicked instanceof ItemPickup) room = clicked.room
+    if (!room) return
+    mode.inventorySlot.reserveFor("throwing")
+    new Order(mode.game.partyFaction, mode.game.markersGroup, mode.game.contentManager, "throwingTo", room.x * 64, room.y * 64, CanExecute, Execute, Cancel)
+
+    function CanExecute(character) {
+        return character.room.hasLineOfSightToRoom(room)
+    }
+    
+    function Execute(character) {
+        mode.inventorySlot.replace(null)
+        
+        // TODO: this can currently be interrupted
+        character.torsoSpriteGroup.play("throw" + Capitalize(character.room.getDirectionToRoom(room)), function() {
+            mode.item["throw"](character, room)
+            character.think()
+        })
+    }
+    
+    function Cancel() {
+        mode.inventorySlot.reserveFor(null)
+    }
+
+    mode.game.setMode(new CombatMode())
+}
+
+ThrowingItemMode.prototype.left = function() {}

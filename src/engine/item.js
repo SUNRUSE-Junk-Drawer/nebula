@@ -1,17 +1,14 @@
 var Items = {
-    wrench: function(game, index) {
-        game.targetRoom(function(room) {
-            game.inventory.remove(index)
-            game.giveOrder(function(character) {
-                var thrown = new SprigganSprite(character.room.game.effectsGroup, sharedContent, "items/icons")
-                thrown.loop("wrench")
-                thrown.move(character.group.x(), character.group.y())
-                thrown.moveAtPixelsPerSecond(room.x * 64, room.y * 64, 500, function() {
-                    thrown.dispose()
-                    new ItemPickup(room, "wrench")
-                })
+    wrench: {
+        "throw": function(fromCharacter, toRoom) {
+            var sprite = new SprigganSprite(fromCharacter.room.game.effectsGroup, sharedContent, "items/icons")
+            sprite.move(fromCharacter.group.x(), fromCharacter.group.y())
+            sprite.loop("wrench")
+            sprite.moveAtPixelsPerSecond(toRoom.x * 64, toRoom.y * 64, 250, function() {
+                sprite.dispose()
+                new ItemPickup(toRoom, "wrench")
             })
-        })
+        }
     }
 }
 
