@@ -67,6 +67,7 @@ function CombatMode() { }
 CombatMode.prototype.clicked = function(clicked) {
     if (clicked instanceof PartyMember) this.game.setMode(new PartyMemberSelectedMode(clicked))
     if (clicked instanceof InventorySlot) {
+        if (clicked.reservedFor) return
         if (clicked.item["throw"]) this.game.setMode(new ThrowingItemMode(clicked))
     }
 }
