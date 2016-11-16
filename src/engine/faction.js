@@ -2,6 +2,8 @@ function Faction() {
     var faction = this
     faction.enemyFactions = []
     faction.orders = []
+    
+    faction.orderGiven = new SprigganEventRecurring()
 }
 
 Faction.prototype.shouldAttack = function(faction) {

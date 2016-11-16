@@ -13,6 +13,8 @@ function Order(faction, markerContainer, markerContentManager, markerAnimationNa
     })
     order.markerSprite.move(markerX, markerY)
     order.markerSprite.loop(markerAnimationName)    
+    
+    order.faction.orderGiven.raise()
 }
 
 Order.prototype.tryExecute = function(character) {

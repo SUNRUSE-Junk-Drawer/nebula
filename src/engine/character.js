@@ -12,6 +12,10 @@ function Character(faction, room, legLayerNames, torsoLayerNames, clicked) {
     character.room.game.contentManager.add(SprigganSpriteSheet, "character")
     character.contentLoaded = new SprigganEventOnce()
     
+    faction.orderGiven.listen(function() {
+        character.think()
+    })
+    
     character.room.game.contentLoaded.listen(function(){
         character.group = new SprigganGroup(character.room.game.charactersGroup, clicked)
         
