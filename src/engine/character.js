@@ -45,27 +45,23 @@ Character.prototype.setDestination = function(room) {
 Character.prototype.think = function() {
     var character = this
     
-    if (character.moving) return
-    
-    for (var i = 0; i < character.faction.orders.length; i++) {
-        if (character.faction.orders[i].tryExecute(character)) return
-    }
-    
-    if (character.room != character.destination) {
+    if (!character.moving && character.room != character.destination) {
         var newDirection = character.room.navigateTo(function(room) {
             return room == character.destination
         })
         if (!newDirection) return
         character.facing = newDirection
+        
         var link = character.room.links[character.facing]
         var next = link.roomOpposite(character.room)
         character.room.exited.raise(character)
         character.legSpriteGroup.loop("walk" + Capitalize(character.facing))
-        character.torsoSpriteGroup.loop("walk" + Capitalize(character.facing))
+        
         SprigganRemoveByValue(character.room.characters, character)
         next.characters.push(character)
         character.room = next
         character.moving = true
+        
         link.enteredBy(character)
         character.group.moveAtPixelsPerSecond(character.room.x * 64, character.room.y * 64, 100, function() {
             link.leftBy(character)
@@ -74,12 +70,26 @@ Character.prototype.think = function() {
             character.think()
         })
         character.room.entered.raise(character)
-        
-        return
     }
     
-    character.legSpriteGroup.loop("idle" + Capitalize(character.facing))
-    character.torsoSpriteGroup.loop("idle" + Capitalize(character.facing))
+    if (!character.moving) 
+        character.legSpriteGroup.loop("idle" + Capitalize(character.facing))
+    
+    if (!character.acting) {
+        for (var i = 0; i < character.faction.orders.length; i++) {
+            if (character.faction.orders[i].tryExecute(character, function() {
+                character.acting = false
+                character.think()
+            })) {
+                character.acting = true
+                break
+            }
+        }
+    }
+    
+    if (!character.acting) {
+        character.torsoSpriteGroup.loop("idle" + Capitalize(character.facing))
+    }
 }
 
 Character.prototype.say = function(text, horizontalAlignment, verticalAlignment) {

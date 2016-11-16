@@ -17,11 +17,11 @@ function Order(faction, markerContainer, markerContentManager, markerAnimationNa
     order.faction.orderGiven.raise()
 }
 
-Order.prototype.tryExecute = function(character) {
+Order.prototype.tryExecute = function(character, then) {
     if (!this.canExecute(character)) return false
     SprigganRemoveByValue(this.faction.orders, this)
     this.markerSprite.dispose()
-    this.execute(character)
+    this.execute(character, then)
     return true
 }
 

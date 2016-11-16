@@ -125,13 +125,13 @@ ThrowingItemMode.prototype.clicked = function(clicked) {
         return character.room.hasLineOfSightToRoom(room)
     }
     
-    function Execute(character) {
+    function Execute(character, then) {
         mode.inventorySlot.replace(null)
         
         // TODO: this can currently be interrupted
         character.torsoSpriteGroup.play("throw" + Capitalize(character.room.getDirectionToRoom(room)), function() {
             mode.item["throw"](character, room)
-            character.think()
+            then()
         })
     }
     
