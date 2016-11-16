@@ -129,7 +129,7 @@ ThrowingItemMode.prototype.clicked = function(clicked) {
         mode.inventorySlot.replace(null)
         
         // TODO: this can currently be interrupted
-        character.torsoSpriteGroup.play("throw" + Capitalize(character.room.getDirectionToRoom(room)), function() {
+        character.torsoSpriteGroup.play("throw" + Capitalize(character.room.getDirectionToRoom(room) || "down"), function() {
             mode.item["throw"](character, room)
             then()
         })
