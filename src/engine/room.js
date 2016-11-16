@@ -31,8 +31,8 @@ function Door(game, spriteSheetUrl, x, y, roomPath) {
 
 // Given a destination room, returns the direction in which to go to reach it.
 // Throws errors when the destination room is inaccessible or this room.
-Room.prototype.navigateTo = function(navigateTo) {
-    if (navigateTo == this) throw new Error("You are already in this room")
+Room.prototype.navigateTo = function(checkIsDestination) {
+    if (checkIsDestination(this)) throw new Error("You are already in this room")
     
     var best = Infinity
     var bestOption = null
@@ -47,7 +47,7 @@ Room.prototype.navigateTo = function(navigateTo) {
         function Recurse(fromRoom, link, distance) {
             if (!link.walkable(fromRoom)) return Infinity
             var toRoom = link.roomOpposite(fromRoom)
-            if (toRoom == navigateTo) return distance
+            if (checkIsDestination(toRoom)) return distance
             
             var obj, i
             

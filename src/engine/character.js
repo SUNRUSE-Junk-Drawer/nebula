@@ -48,7 +48,9 @@ Character.prototype.think = function() {
     }
     
     if (character.room != character.destination) {
-        var newDirection = character.room.navigateTo(character.destination)
+        var newDirection = character.room.navigateTo(function(room) {
+            return room == character.destination
+        })
         if (!newDirection) return
         character.facing = newDirection
         var link = character.room.links[character.facing]
