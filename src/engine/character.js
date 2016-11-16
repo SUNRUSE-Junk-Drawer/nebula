@@ -88,7 +88,10 @@ Character.prototype.think = function() {
     }
     
     if (!character.acting) {
-        character.torsoSpriteGroup.loop("idle" + Capitalize(character.facing))
+        if (character.moving)
+            character.torsoSpriteGroup.loop("walk" + Capitalize(character.facing))
+        else
+            character.torsoSpriteGroup.loop("idle" + Capitalize(character.facing))
     }
 }
 
