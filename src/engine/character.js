@@ -1,9 +1,11 @@
-function Character(faction, room, legLayerNames, torsoLayerNames, clicked) {
+function Character(faction, room, legName, torsoName, weaponName, headName, clicked) {
     var character = this
     character.faction = faction
     character.room = room
-    character.legLayerNames = legLayerNames
-    character.torsoLayerNames = torsoLayerNames
+    character.legName = legName
+    character.torsoName = torsoName
+    character.weaponName = weaponName
+    character.headName = headName
     character.layers = []
     character.destination = room
     character.facing = "down"
@@ -18,9 +20,9 @@ function Character(faction, room, legLayerNames, torsoLayerNames, clicked) {
     character.room.game.contentLoaded.listen(function(){
         character.group = new SprigganGroup(character.room.game.charactersGroup, clicked)
         
-        character.legSpriteGroup = new SpriteGroup(character.group, character.room.game.contentManager, "character", character.legLayerNames)
+        character.legSpriteGroup = new SpriteGroup(character.group, character.room.game.contentManager, "character", [character.legName])
         character.legSpriteGroup.loop("idleDown")
-        character.torsoSpriteGroup = new SpriteGroup(character.group, character.room.game.contentManager, "character", character.torsoLayerNames)
+        character.torsoSpriteGroup = new SpriteGroup(character.group, character.room.game.contentManager, "character", [character.torsoName, character.weaponName, character.headName])
         character.torsoSpriteGroup.loop("idleDown")
         
         character.group.move(character.room.x * 64, character.room.y * 64)
