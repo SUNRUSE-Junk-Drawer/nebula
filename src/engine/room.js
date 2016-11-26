@@ -9,6 +9,7 @@ function Room(game, x, y) {
     room.exited = new SprigganEventRecurring()
     room.arrived = new SprigganEventRecurring()
     room.characters = []
+    room.idleCharacters = []
     game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
     game.contentLoaded.listen(function(){
         room.sprite = new SprigganSprite(game.backgroundGroup, game.contentManager, "rooms/rooms", function(){
@@ -17,6 +18,59 @@ function Room(game, x, y) {
         room.sprite.move(room.x * 64, room.y * 64)
         room.sprite.loop("room")
     })
+}
+
+Room.prototype.addIdleCharacter = function(character, facing) {
+    if (this.idleCharacters.indexOf(character) != -1) return
+        
+    // Try and find the "best" place in the list given the characters run
+    // counter clockwise from south.
+    if (!this.idleCharacters.length) {
+        this.idleCharacters.push(character)
+    } else if (this.idleCharacters.length == 1) {     
+        switch(facing) {
+            case "up":                
+                // Start of array, south.
+                this.idleCharacters.unshift(character)   
+                break
+                
+            case "down":               
+                // End of array, north.
+                this.idleCharacters.push(character)
+                break
+                
+            default:                
+                if (Math.random() >= 0.5)
+                    this.idleCharacters.push(character)
+                else
+                    this.idleCharacters.unshift(character)   
+                break
+        }
+    } else {
+        switch (facing) {
+            case "left":
+                this.idleCharacters.splice(Math.ceil(this.idleCharacters.length / 4), 0, character)
+                break
+            case "right":
+                this.idleCharacters.splice(Math.ceil(this.idleCharacters.length * 3 / 4), 0, character)
+                break
+            case "up":
+                this.idleCharacters.unshift(character) 
+                break
+            case "down":
+                this.idleCharacters.splice(Math.ceil(this.idleCharacters.length / 2), 0, character)
+                break
+        }
+    }
+    
+    for (var i = 0; i < this.idleCharacters.length; i++) this.idleCharacters[i].think()
+}
+
+Room.prototype.removeIdleCharacter = function(character) {
+    if (this.idleCharacters.indexOf(character) == -1) return
+    
+    SprigganRemoveByValue(this.idleCharacters, character)
+    for (var i = 0; i < this.idleCharacters.length; i++) this.idleCharacters[i].think()
 }
 
 // A Room which changes the room when all party members are inside.

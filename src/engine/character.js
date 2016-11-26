@@ -28,11 +28,9 @@ function Character(faction, room, legLayerNames, torsoLayerNames, clicked) {
         
         character.contentLoaded.raise()
         
-        character.moving = false
+        character.initialized = true
         
-        character.room.entered.raise(character)
-
-        character.think()  
+        character.room.addIdleCharacter(character, "up")
     })
 }
 
@@ -45,35 +43,76 @@ Character.prototype.setDestination = function(room) {
 Character.prototype.think = function() {
     var character = this
     
-    if (!character.moving && character.room != character.destination) {
+    if (!character.initialized) return
+
+    if (!character.moving) {
         var newDirection = character.room.navigateTo(function(room) {
             return room == character.destination
         })
-        if (!newDirection) return
-        character.facing = newDirection
         
-        var link = character.room.links[character.facing]
-        var next = link.roomOpposite(character.room)
-        character.room.exited.raise(character)
-        character.legSpriteGroup.loop("walk" + Capitalize(character.facing))
-        
-        SprigganRemoveByValue(character.room.characters, character)
-        next.characters.push(character)
-        character.room = next
-        character.moving = true
-        
-        link.enteredBy(character)
-        character.group.moveAtPixelsPerSecond(character.room.x * 64, character.room.y * 64, 100, function() {
-            link.leftBy(character)
+        if (!newDirection) {
+            character.destination = character.room
             character.moving = false
-            character.room.arrived.raise(character)
-            character.think()
-        })
-        character.room.entered.raise(character)
+        } else {
+            character.room.removeIdleCharacter(character)
+            character.facing = newDirection
+            var link = character.room.links[newDirection]
+            var next = link.roomOpposite(character.room)
+            character.moving = true
+            
+            character.legSpriteGroup.loop("walk" + Capitalize(character.facing))
+
+            // Walking over a link is a four step process:
+            // - Walk 20 pixels in front of the boundary our side.
+            // - Walk to the boundary.  The room swap happens here.
+            // - Walk 20 pixels in front of the boundary on the new side.
+            // - Recurse to .think()
+            
+            var xDiff = 0, yDiff = 0
+            
+            switch (character.facing) {
+                case "up":
+                    yDiff = -20
+                    break
+                case "down":
+                    yDiff = 20
+                    break
+                case "left":
+                    xDiff = -20
+                    break
+                case "right":
+                    xDiff = 20
+                    break
+            }
+            
+            var x = (next.x + character.room.x) * 32
+            var y = (next.y + character.room.y) * 32
+            
+            character.group.moveAtPixelsPerSecond(x - xDiff, y - yDiff, 100, function() {
+                link.enteredBy(character)
+                character.group.moveAtPixelsPerSecond(x, y , 100, function() {
+                    character.room = next
+                    character.group.moveAtPixelsPerSecond(x + xDiff, y + yDiff, 100, function() {
+                        link.leftBy(character)
+                        character.moving = false
+                        character.room.addIdleCharacter(character, newDirection)
+                    })
+                })
+            })
+        }
     }
     
-    if (!character.moving) 
+    if (!character.moving) {
+        var x = character.room.x * 64
+        var y = character.room.y * 64
+        if (character.room.idleCharacters.length > 1) {
+            var angle = character.room.idleCharacters.indexOf(character) * 2 * Math.PI / character.room.idleCharacters.length
+            x += Math.sin(angle) * 8
+            y += Math.cos(angle) * 8
+        }
+        character.group.moveAtPixelsPerSecond(x, y, 100)
         character.legSpriteGroup.loop("idle" + Capitalize(character.facing))
+    }
     
     if (!character.acting) {
         for (var i = 0; i < character.faction.orders.length; i++) {
