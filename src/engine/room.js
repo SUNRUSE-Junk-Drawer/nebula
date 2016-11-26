@@ -32,7 +32,7 @@ function Door(game, spriteSheetUrl, x, y, roomPath) {
 // Given a destination room, returns the direction in which to go to reach it.
 // Throws errors when the destination room is inaccessible or this room.
 Room.prototype.navigateTo = function(checkIsDestination) {
-    if (checkIsDestination(this)) throw new Error("You are already in this room")
+    if (checkIsDestination(this)) return null
     
     var best = Infinity
     var bestOption = null
@@ -80,9 +80,7 @@ Room.prototype.navigateTo = function(checkIsDestination) {
         bestOption = key
     }
     
-    if (bestOption) return bestOption
-    
-    throw new Error("No route found")
+    return bestOption
 }
 
 Room.prototype.emitLineOfSight = function(distance, waistHigh, callback) {
