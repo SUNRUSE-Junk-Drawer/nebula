@@ -7,8 +7,7 @@ function Character(faction, room, legLayerNames, torsoLayerNames, clicked) {
     character.layers = []
     character.destination = room
     character.facing = "down"
-    character.room.game.characters.push(character)
-    character.room.characters.push(character)
+
     character.room.game.contentManager.add(SprigganSpriteSheet, "character")
     character.contentLoaded = new SprigganEventOnce()
     
@@ -26,9 +25,10 @@ function Character(faction, room, legLayerNames, torsoLayerNames, clicked) {
         
         character.group.move(character.room.x * 64, character.room.y * 64)
         
-        character.contentLoaded.raise()
+        character.room.game.characters.push(character)
+        character.room.characters.push(character)
         
-        character.initialized = true
+        character.contentLoaded.raise()
         
         character.room.addIdleCharacter(character, "up")
     })
@@ -42,8 +42,6 @@ Character.prototype.setDestination = function(room) {
 
 Character.prototype.think = function() {
     var character = this
-    
-    if (!character.initialized) return
 
     if (!character.moving) {
         var newDirection = character.room.navigateTo(function(room) {
