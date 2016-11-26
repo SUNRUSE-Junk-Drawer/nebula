@@ -31,6 +31,8 @@ function Character(faction, room, legLayerNames, torsoLayerNames, clicked) {
         character.contentLoaded.raise()
         
         character.room.addIdleCharacter(character, "up")
+        
+        character.room.arrived.raise(character)
     })
 }
 
@@ -90,6 +92,7 @@ Character.prototype.think = function() {
                 link.enteredBy(character)
                 character.group.moveAtPixelsPerSecond(x, y , 100, function() {
                     character.room = next
+                    character.room.arrived.raise(character)
                     character.group.moveAtPixelsPerSecond(x + xDiff, y + yDiff, 100, function() {
                         link.leftBy(character)
                         character.moving = false
