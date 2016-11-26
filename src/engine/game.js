@@ -8,8 +8,9 @@ function Game(savegame) {
     
     game.characters = []
     
-    game.partyFaction = new Faction()
-    game.enemyFaction = new Faction()
+    game.factions = []
+    game.partyFaction = new Faction(game)
+    game.enemyFaction = new Faction(game)
     new Animosity(game.partyFaction, game.enemyFaction)
     
     var roomScriptContentManager = new SprigganContentManager({ loaded: LoadedRoomScript })
