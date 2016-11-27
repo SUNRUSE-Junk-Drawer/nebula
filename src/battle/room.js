@@ -73,16 +73,6 @@ Room.prototype.removeIdleCharacter = function(character) {
     for (var i = 0; i < this.idleCharacters.length; i++) this.idleCharacters[i].think()
 }
 
-// A Room which changes the room when all party members are inside.
-function Door(game, spriteSheetUrl, x, y, roomPath) {
-    Room.call(this, game, spriteSheetUrl, x, y)
-    this.arrived.listen(function() {
-        game.dispose()
-        game.savegame.roomPath = roomPath
-        new Game(game.savegame)
-    })
-}
-
 // Given a destination room, returns the direction in which to go to reach it.
 // Throws errors when the destination room is inaccessible or this room.
 Room.prototype.navigateTo = function(checkIsDestination) {
