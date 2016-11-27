@@ -21,7 +21,8 @@ function Game(savegame) {
         game.contentManager.add(SprigganSpriteSheet, "battle")
         
         roomScriptContentManager.get(SprigganJavaScript, "rooms/" + savegame.roomPath + "/script.js")(game)
-        new PartyMember(game.spawnRoom)
+        new PartyMember(game.spawnRoom, "pistol")
+        new PartyMember(game.spawnRoom, "sword")
         roomScriptContentManager.dispose()
     }
     
