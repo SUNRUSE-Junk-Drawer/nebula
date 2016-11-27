@@ -129,6 +129,8 @@ Character.prototype.think = function() {
         }
     }
     
+    Items[character.weaponName].weapon.handle(character)
+    
     if (!character.acting) {
         if (character.moving)
             character.torsoSpriteGroup.loop("walk" + Capitalize(character.facing))
