@@ -9,8 +9,6 @@ function Character(faction, room, legName, torsoName, weaponName, headName, clic
     character.layers = []
     character.destination = room
     character.facing = "down"
-
-    character.contentLoaded = new SprigganEventOnce()
     
     faction.orderGiven.listen(function() {
         character.think()
@@ -28,8 +26,6 @@ function Character(faction, room, legName, torsoName, weaponName, headName, clic
         
         character.room.game.characters.push(character)
         character.room.characters.push(character)
-        
-        character.contentLoaded.raise()
         
         character.room.addIdleCharacter(character, "up")
         
