@@ -3,7 +3,7 @@ function Inventory(game) {
     inventory.game = game
     inventory.opened = false
     inventory.viewport = new SprigganViewport(428, 240, "right", "bottom")
-    inventory.icon = new SprigganSprite(inventory.viewport, game.contentManager, "battle", ToggleInventory)
+    inventory.icon = new SprigganSprite(inventory.viewport, BattleContent, "battle", ToggleInventory)
     function ToggleInventory() {
         inventory.opened = !inventory.opened
         inventory.refresh()
@@ -75,8 +75,8 @@ function InventorySlot(inventory, x, y) {
     
     inventorySlot.group.move(330 + x * 39, 63 + y * 39)
     
-    inventorySlot.itemSprite = new SprigganSprite(inventorySlot.group, sharedContent, "items/icons")
-    inventorySlot.statusSprite = new SprigganSprite(inventorySlot.group, inventory.game.contentManager, "battle")
+    inventorySlot.itemSprite = new SprigganSprite(inventorySlot.group, BattleContent, "items/icons")
+    inventorySlot.statusSprite = new SprigganSprite(inventorySlot.group, BattleContent, "battle")
 
     inventorySlot.refresh()
 }

@@ -44,15 +44,26 @@ module.exports = function(grunt) {
                     screwIE8: false
                 },
                 files: [{
-                    expand: true,
-                    src: "**/*/*.js",
-                    dest: "dist",
-                    cwd: "src"
+                    src: "src/*.js",
+                    dest: "dist/index.js"                    
                 }, {
-                    src: "src/engine/**.js",
-                    dest: "dist/index.js"
+                    src: ["src/battle/!(footer).js", "src/battle/footer.js"],
+                    dest: "dist/battle.js"
+                }, {
+                    src: ["src/navigation/!(footer).js", "src/navigation/footer.js"],
+                    dest: "dist/navigation.js"
+                }, {
+                    expand: true,
+                    src: "**/*.js",
+                    dest: "dist/rooms",
+                    cwd: "src/rooms"            
+                }, {
+                    expand: true,
+                    src: "**/*.js",
+                    dest: "dist/navigation",
+                    cwd: "src/navigation"            
                 }]
-            }
+            }            
         },
         "sprigganjs-aseprite": {
             all: {

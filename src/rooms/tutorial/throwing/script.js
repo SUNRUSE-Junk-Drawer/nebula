@@ -1,40 +1,40 @@
 return function(game) {
     game.contentManager.add(SprigganSpriteSheet, "rooms/tutorial/throwing/atlas")
     
-    var pickup = new Room(game, 1, 2)
-    new ItemPickup(pickup, "wrench")
-    var spawn = new Room(game, 1, 1)
+    var pickup = new Battle.Room(game, 1, 2)
+    new Battle.ItemPickup(pickup, "wrench")
+    var spawn = new Battle.Room(game, 1, 1)
     
-    var pathToDistraction = new Room(game, 0, 1)
-    new Ledge(spawn, pathToDistraction)
+    var pathToDistraction = new Battle.Room(game, 0, 1)
+    new Battle.Ledge(spawn, pathToDistraction)
     
-    var distract = new Room(game, -1, 1)
+    var distract = new Battle.Room(game, -1, 1)
     
-    new Arch(spawn, pickup)
+    new Battle.Arch(spawn, pickup)
     
     
-    new Door(pathToDistraction, distract)
+    new Battle.Door(pathToDistraction, distract)
     
-    var pathToTargetA = new Room(game, -1, 0)
+    var pathToTargetA = new Battle.Room(game, -1, 0)
     
-    new Arch(distract, pathToTargetA)
+    new Battle.Arch(distract, pathToTargetA)
     
-    var pathToTargetB = new Room(game, -1, -1)
+    var pathToTargetB = new Battle.Room(game, -1, -1)
     
-    new Arch(pathToTargetA, pathToTargetB)
+    new Battle.Arch(pathToTargetA, pathToTargetB)
     
-    var pathToTargetC = new Room(game, 0, -1)
+    var pathToTargetC = new Battle.Room(game, 0, -1)
     
-    new Arch(pathToTargetB, pathToTargetC)
+    new Battle.Arch(pathToTargetB, pathToTargetC)
     
-    var pathToTargetD = new Room(game, 1, -1)
+    var pathToTargetD = new Battle.Room(game, 1, -1)
     
-    new Arch(pathToTargetC, pathToTargetD)          
+    new Battle.Arch(pathToTargetC, pathToTargetD)          
     
-    var target = new Room(game, 1, 0)
-    new Ledge(spawn, target)
+    var target = new Battle.Room(game, 1, 0)
+    new Battle.Ledge(spawn, target)
     
-    new Arch(pathToTargetD, target)
+    new Battle.Arch(pathToTargetD, target)
     
     //new Link(pathToTargetD, target, ["walkable"])
     //new Link(target, pathToTargetD, ["walkable"])        
@@ -43,11 +43,9 @@ return function(game) {
     //new Link(distract, exit, ["walkable"])
     //new Link(exit, distract, ["walkable"])   
 
-    new Window(pathToTargetB, "top")
-    new Window(pathToTargetC, "top")
-    new Window(pathToTargetD, "top")
+    new Battle.Window(pathToTargetB, "top")
+    new Battle.Window(pathToTargetC, "top")
+    new Battle.Window(pathToTargetD, "top")
     
     game.spawnRoom = spawn    
-    
-    new Enemy(distract)
 }

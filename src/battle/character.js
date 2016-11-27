@@ -10,7 +10,6 @@ function Character(faction, room, legName, torsoName, weaponName, headName, clic
     character.destination = room
     character.facing = "down"
 
-    character.room.game.contentManager.add(SprigganSpriteSheet, "character")
     character.contentLoaded = new SprigganEventOnce()
     
     faction.orderGiven.listen(function() {
@@ -20,9 +19,9 @@ function Character(faction, room, legName, torsoName, weaponName, headName, clic
     character.room.game.contentLoaded.listen(function(){
         character.group = new SprigganGroup(character.room.game.charactersGroup, clicked)
         
-        character.legSpriteGroup = new SpriteGroup(character.group, character.room.game.contentManager, "character", [character.legName])
+        character.legSpriteGroup = new SpriteGroup(character.group, BattleContent, "character", [character.legName])
         character.legSpriteGroup.loop("idleDown")
-        character.torsoSpriteGroup = new SpriteGroup(character.group, character.room.game.contentManager, "character", [character.torsoName, character.weaponName, character.headName])
+        character.torsoSpriteGroup = new SpriteGroup(character.group, BattleContent, "character", [character.torsoName, character.weaponName, character.headName])
         character.torsoSpriteGroup.loop("idleDown")
         
         character.group.move(character.room.x * 64, character.room.y * 64)

@@ -13,12 +13,11 @@ function Game(savegame) {
     game.enemyFaction = new Faction(game)
     new Animosity(game.partyFaction, game.enemyFaction)
     
-    var roomScriptContentManager = new SprigganContentManager({ loaded: LoadedRoomScript })
+    var roomScriptContentManager = ShowLoadingScreen(LoadedRoomScript)
     roomScriptContentManager.add(SprigganJavaScript, "rooms/" + savegame.roomPath + "/script.js")
     
     function LoadedRoomScript() {
-        game.contentManager = new SprigganContentManager({ loaded: LoadedContent })
-        game.contentManager.add(SprigganSpriteSheet, "battle")
+        game.contentManager = ShowLoadingScreen(LoadedContent)
         
         roomScriptContentManager.get(SprigganJavaScript, "rooms/" + savegame.roomPath + "/script.js")(game)
         new PartyMember(game.spawnRoom, "pistol")
