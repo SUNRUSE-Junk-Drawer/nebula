@@ -10,31 +10,31 @@ return function(game) {
     
     var distract = new Battle.Room(game, -1, 1)
     
-    new Battle.Arch(spawn, pickup)
+    new Battle.Path(spawn, pickup)
     
     
     new Battle.Door(pathToDistraction, distract)
     
     var pathToTargetA = new Battle.Room(game, -1, 0)
     
-    new Battle.Arch(distract, pathToTargetA)
+    new Battle.Path(distract, pathToTargetA)
     
     var pathToTargetB = new Battle.Room(game, -1, -1)
     
-    new Battle.Arch(pathToTargetA, pathToTargetB)
+    new Battle.Path(pathToTargetA, pathToTargetB)
     
     var pathToTargetC = new Battle.Room(game, 0, -1)
     
-    new Battle.Arch(pathToTargetB, pathToTargetC)
+    new Battle.Path(pathToTargetB, pathToTargetC)
     
     var pathToTargetD = new Battle.Room(game, 1, -1)
     
-    new Battle.Arch(pathToTargetC, pathToTargetD)          
+    new Battle.Path(pathToTargetC, pathToTargetD)          
     
     var target = new Battle.Room(game, 1, 0)
     new Battle.Ledge(spawn, target)
     
-    new Battle.Arch(pathToTargetD, target)
+    new Battle.Path(pathToTargetD, target)
     
     //new Link(pathToTargetD, target, ["walkable"])
     //new Link(target, pathToTargetD, ["walkable"])        

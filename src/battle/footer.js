@@ -1,7 +1,7 @@
 return {
     Game: Game,
     Room: Room,
-    Arch: Arch,
+    Path: Path,
     Door: Door,
     Ledge: Ledge,
     ItemPickup: ItemPickup,

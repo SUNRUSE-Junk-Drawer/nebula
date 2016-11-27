@@ -283,23 +283,23 @@ Door.prototype.blocksLineOfSight = function(fromRoom) {
     return !this.users
 }
 
-function Arch(fromRoom, toRoom) {
-    var arch = this
-    arch.fromRoom = fromRoom
-    arch.toRoom = toRoom
-    arch.linkToRooms()
-    arch.game = toRoom.game
-    arch.game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
-    arch.game.contentLoaded.listen(function() {
-        arch.sprite = new SprigganSprite(arch.game.backgroundOverlayGroup, arch.game.contentManager, "rooms/rooms")
-        arch.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
-        arch.sprite.loop("arch" + Capitalize(arch.orientation))
+function Path(fromRoom, toRoom) {
+    var path = this
+    path.fromRoom = fromRoom
+    path.toRoom = toRoom
+    path.linkToRooms()
+    path.game = toRoom.game
+    path.game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
+    path.game.contentLoaded.listen(function() {
+        path.sprite = new SprigganSprite(path.game.backgroundOverlayGroup, path.game.contentManager, "rooms/rooms")
+        path.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
+        path.sprite.loop("path" + Capitalize(path.orientation))
     })
 }
 
-MakeLink(Arch)
+MakeLink(Path)
 
-Arch.prototype.walkable = function(fromRoom) {
+Path.prototype.walkable = function(fromRoom) {
     return true
 }
 
