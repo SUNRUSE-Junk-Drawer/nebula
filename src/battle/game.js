@@ -20,6 +20,11 @@ function Game(savegame) {
         game.contentManager = ShowLoadingScreen(LoadedContent)
         
         roomScriptContentManager.get(SprigganJavaScript, "rooms/" + savegame.roomPath + "/script.js")(game)
+        
+        game.tileset = Tilesets[game.tilesetName]
+        game.tilesetSpriteSheet = "battle/tilesets/" + game.tilesetName
+        game.contentManager.add(SprigganSpriteSheet, game.tilesetSpriteSheet)
+        
         new PartyMember(game.spawnRoom, "pistol")
         new PartyMember(game.spawnRoom, "sword")
         roomScriptContentManager.dispose()

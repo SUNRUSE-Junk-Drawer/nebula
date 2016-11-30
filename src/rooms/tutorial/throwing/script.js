@@ -1,6 +1,4 @@
-return function(game) {
-    game.contentManager.add(SprigganSpriteSheet, "rooms/tutorial/throwing/atlas")
-    
+return function(game) {    
     var pickup = new Battle.Room(game, 1, 2)
     new Battle.ItemPickup(pickup, "wrench")
     var spawn = new Battle.Room(game, 1, 1)
@@ -48,4 +46,5 @@ return function(game) {
     new Battle.Window(pathToTargetD, "top")
     
     game.spawnRoom = spawn    
+    game.tilesetName = "leviathan"
 }

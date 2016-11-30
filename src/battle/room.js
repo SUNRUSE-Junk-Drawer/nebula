@@ -1,5 +1,5 @@
 // Represents a place characters can stand.
-function Room(game, x, y) {
+function Room(game, x, y, sprite) {
     var room = this
     room.game = game
     room.x = x
@@ -10,13 +10,12 @@ function Room(game, x, y) {
     room.arrived = new SprigganEventRecurring()
     room.characters = []
     room.idleCharacters = []
-    game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
     game.contentLoaded.listen(function(){
-        room.sprite = new SprigganSprite(game.backgroundGroup, game.contentManager, "rooms/rooms", function(){
+        room.sprite = new SprigganSprite(game.backgroundGroup, game.contentManager, game.tilesetSpriteSheet, function(){
             room.game.mode.clicked(room)
         })
         room.sprite.move(room.x * 64, room.y * 64)
-        room.sprite.loop("room")
+        room.sprite.loop(sprite || "room")
     })
 }
 
@@ -224,24 +223,23 @@ function MakeLink(type) {
     }
 }
 
-function Door(fromRoom, toRoom) {
+function Door(fromRoom, toRoom, sprite) {
     var door = this
     door.users = 0
     door.fromRoom = fromRoom
     door.toRoom = toRoom
     door.linkToRooms()
     
-    door.animationPrefix = "door" + Capitalize(door.orientation)
+    door.animationPrefix = (sprite || "door") + Capitalize(door.orientation)
     
     door.game = toRoom.game
-    door.game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
     
     door.game.contentLoaded.listen(function() {
-        door.sprite = new SprigganSprite(door.game.backgroundOverlayGroup, door.game.contentManager, "rooms/rooms")
+        door.sprite = new SprigganSprite(door.game.backgroundOverlayGroup, door.game.contentManager, door.game.tilesetSpriteSheet)
         door.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
         door.sprite.loop(door.animationPrefix + "Closed")
         
-        door.foregroundSprite = new SprigganSprite(door.game.foregroundGroup, door.game.contentManager, "rooms/rooms")
+        door.foregroundSprite = new SprigganSprite(door.game.foregroundGroup, door.game.contentManager, door.game.tilesetSpriteSheet)
         door.foregroundSprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
         door.foregroundSprite.loop(door.animationPrefix + "Foreground")
     })
@@ -273,17 +271,16 @@ Door.prototype.blocksLineOfSight = function(fromRoom) {
     return !this.users
 }
 
-function Path(fromRoom, toRoom) {
+function Path(fromRoom, toRoom, sprite) {
     var path = this
     path.fromRoom = fromRoom
     path.toRoom = toRoom
     path.linkToRooms()
     path.game = toRoom.game
-    path.game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
     path.game.contentLoaded.listen(function() {
-        path.sprite = new SprigganSprite(path.game.backgroundOverlayGroup, path.game.contentManager, "rooms/rooms")
+        path.sprite = new SprigganSprite(path.game.backgroundOverlayGroup, path.game.contentManager, path.game.tilesetSpriteSheet)
         path.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
-        path.sprite.loop("path" + Capitalize(path.orientation))
+        path.sprite.loop((sprite || "path") + Capitalize(path.orientation))
     })
 }
 
@@ -293,17 +290,16 @@ Path.prototype.walkable = function(fromRoom) {
     return true
 }
 
-function Ledge(fromRoom, toRoom) {
+function Ledge(fromRoom, toRoom, sprite) {
     var ledge = this
     ledge.fromRoom = fromRoom
     ledge.toRoom = toRoom
     ledge.linkToRooms()
     ledge.game = toRoom.game
-    ledge.game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
     ledge.game.contentLoaded.listen(function() {
-        ledge.sprite = new SprigganSprite(ledge.game.backgroundOverlayGroup, ledge.game.contentManager, "rooms/rooms")
+        ledge.sprite = new SprigganSprite(ledge.game.backgroundOverlayGroup, ledge.game.contentManager, ledge.game.tilesetSpriteSheet)
         ledge.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
-        ledge.sprite.loop("ledge" + Capitalize(ledge.direction))
+        ledge.sprite.loop((sprite || "ledge") + Capitalize(ledge.direction))
     })
 }
 
@@ -313,14 +309,13 @@ Ledge.prototype.walkable = function(fromRoom) {
     return fromRoom == this.fromRoom
 }
 
-function Window(room, position) {
+function Window(room, position, sprite) {
     var window = this
     window.room = room
     window.game = room.game
-    window.game.contentManager.add(SprigganSpriteSheet, "rooms/rooms")
     window.game.contentLoaded.listen(function() {
-        window.sprite = new SprigganSprite(window.game.backgroundOverlayGroup, window.game.contentManager, "rooms/rooms")
+        window.sprite = new SprigganSprite(window.game.backgroundOverlayGroup, window.game.contentManager, window.game.tilesetSpriteSheet)
         window.sprite.move(room.x * 64, room.y * 64)
-        window.sprite.loop("window" + position[0].toUpperCase() + position.slice(1))
+        window.sprite.loop((sprite || "window") + position[0].toUpperCase() + position.slice(1))
     })
 }
