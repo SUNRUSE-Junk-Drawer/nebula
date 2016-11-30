@@ -5,5 +5,5 @@ return {
     Door: Door,
     Ledge: Ledge,
     ItemPickup: ItemPickup,
-    Window: Window
+    Decoration: Decoration
 }

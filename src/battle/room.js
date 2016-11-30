@@ -309,13 +309,13 @@ Ledge.prototype.walkable = function(fromRoom) {
     return fromRoom == this.fromRoom
 }
 
-function Window(room, position, sprite) {
-    var window = this
-    window.room = room
-    window.game = room.game
-    window.game.contentLoaded.listen(function() {
-        window.sprite = new SprigganSprite(window.game.backgroundOverlayGroup, window.game.contentManager, window.game.tilesetSpriteSheet)
-        window.sprite.move(room.x * 64, room.y * 64)
-        window.sprite.loop((sprite || "window") + position[0].toUpperCase() + position.slice(1))
+function Decoration(room, position, sprite) {
+    var decoration = this
+    decoration.room = room
+    decoration.game = room.game
+    decoration.game.contentLoaded.listen(function() {
+        decoration.sprite = new SprigganSprite(decoration.game.backgroundOverlayGroup, decoration.game.contentManager, decoration.game.tilesetSpriteSheet)
+        decoration.sprite.move(room.x * 64, room.y * 64)
+        decoration.sprite.loop(sprite + position[0].toUpperCase() + position.slice(1))
     })
 }

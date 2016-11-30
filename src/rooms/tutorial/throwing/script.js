@@ -41,9 +41,9 @@ return function(game) {
     //new Link(distract, exit, ["walkable"])
     //new Link(exit, distract, ["walkable"])   
 
-    new Battle.Window(pathToTargetB, "top")
-    new Battle.Window(pathToTargetC, "top")
-    new Battle.Window(pathToTargetD, "top")
+    new Battle.Decoration(pathToTargetB, "top", "window")
+    new Battle.Decoration(pathToTargetC, "top", "window")
+    new Battle.Decoration(pathToTargetD, "top", "window")
     
     game.spawnRoom = spawn    
     game.tilesetName = "leviathan"
