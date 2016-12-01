@@ -1,6 +1,6 @@
 function PlayPause(game) {
     var playPause = this
-    playPause.viewport = new SprigganViewport(428, 240, "left", "bottom")
+    playPause.viewport = new SprigganViewport(screenWidth, screenHeight, "left", "bottom")
     playPause.sprite = new SprigganSprite(playPause.viewport, game.contentManager, "battle", TogglePause)
     playPause.sprite.loop("pause")
     playPause.paused = false

@@ -31,7 +31,7 @@ function Game(savegame) {
     }
     
     function LoadedContent() {
-        game.viewport = new SprigganViewport(428, 240)
+        game.viewport = new SprigganViewport(screenWidth, screenHeight)
         game.group = new SprigganGroup(game.viewport)
         game.group.move(214, 88)
         game.backgroundGroup = new SprigganGroup(game.group)

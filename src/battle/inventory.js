@@ -2,7 +2,7 @@ function Inventory(game) {
     var inventory = this
     inventory.game = game
     inventory.opened = false
-    inventory.viewport = new SprigganViewport(428, 240, "right", "bottom")
+    inventory.viewport = new SprigganViewport(screenWidth, screenHeight, "right", "bottom")
     inventory.icon = new SprigganSprite(inventory.viewport, BattleContent, "battle", ToggleInventory)
     function ToggleInventory() {
         inventory.opened = !inventory.opened
