@@ -14,7 +14,7 @@ function Room(game, x, y, sprite) {
         room.sprite = new SprigganSprite(game.backgroundGroup, game.contentManager, game.tilesetSpriteSheet, function(){
             room.game.mode.clicked(room)
         })
-        room.sprite.move(room.x * 64, room.y * 64)
+        room.sprite.move(room.x * room.game.tileset.gridSpacing, room.y * room.game.tileset.gridSpacing)
         room.sprite.loop(sprite || "room")
     })
 }
@@ -236,11 +236,11 @@ function InteriorDoor(fromRoom, toRoom, sprite) {
     
     interiorDoor.game.contentLoaded.listen(function() {
         interiorDoor.sprite = new SprigganSprite(interiorDoor.game.backgroundOverlayGroup, interiorDoor.game.contentManager, interiorDoor.game.tilesetSpriteSheet)
-        interiorDoor.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
+        interiorDoor.sprite.move((fromRoom.x + toRoom.x) * fromRoom.game.tileset.gridSpacing / 2, (fromRoom.y + toRoom.y) * fromRoom.game.tileset.gridSpacing / 2)
         interiorDoor.sprite.loop(interiorDoor.animationPrefix + "Closed")
         
         interiorDoor.foregroundSprite = new SprigganSprite(interiorDoor.game.foregroundGroup, interiorDoor.game.contentManager, interiorDoor.game.tilesetSpriteSheet)
-        interiorDoor.foregroundSprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
+        interiorDoor.foregroundSprite.move((fromRoom.x + toRoom.x) * fromRoom.game.tileset.gridSpacing / 2, (fromRoom.y + toRoom.y) * fromRoom.game.tileset.gridSpacing / 2)
         interiorDoor.foregroundSprite.loop(interiorDoor.animationPrefix + "Foreground")
     })
 }
@@ -279,7 +279,7 @@ function Path(fromRoom, toRoom, sprite) {
     path.game = toRoom.game
     path.game.contentLoaded.listen(function() {
         path.sprite = new SprigganSprite(path.game.backgroundOverlayGroup, path.game.contentManager, path.game.tilesetSpriteSheet)
-        path.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
+        path.sprite.move((fromRoom.x + toRoom.x) * fromRoom.game.tileset.gridSpacing / 2, (fromRoom.y + toRoom.y) * fromRoom.game.tileset.gridSpacing / 2)
         path.sprite.loop((sprite || "path") + Capitalize(path.orientation))
     })
 }
@@ -298,7 +298,7 @@ function Ledge(fromRoom, toRoom, sprite) {
     ledge.game = toRoom.game
     ledge.game.contentLoaded.listen(function() {
         ledge.sprite = new SprigganSprite(ledge.game.backgroundOverlayGroup, ledge.game.contentManager, ledge.game.tilesetSpriteSheet)
-        ledge.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
+        ledge.sprite.move((fromRoom.x + toRoom.x) * fromRoom.game.tileset.gridSpacing / 2, (fromRoom.y + toRoom.y) * fromRoom.game.tileset.gridSpacing / 2)
         ledge.sprite.loop((sprite || "ledge") + Capitalize(ledge.direction))
     })
 }
@@ -315,7 +315,7 @@ function Decoration(room, position, sprite) {
     decoration.game = room.game
     decoration.game.contentLoaded.listen(function() {
         decoration.sprite = new SprigganSprite(decoration.game.backgroundOverlayGroup, decoration.game.contentManager, decoration.game.tilesetSpriteSheet)
-        decoration.sprite.move(room.x * 64, room.y * 64)
+        decoration.sprite.move(room.x * room.game.tileset.gridSpacing, room.y * room.game.tileset.gridSpacing)
         decoration.sprite.loop(sprite + position[0].toUpperCase() + position.slice(1))
     })
 }
@@ -327,10 +327,10 @@ function ExteriorDoor(room, position, sprite) {
     var spritePrefix = (sprite || "exteriorDoor") + Capitalize(position)
     exteriorDoor.game.contentLoaded.listen(function() {
         exteriorDoor.sprite = new SprigganSprite(exteriorDoor.game.backgroundOverlayGroup, exteriorDoor.game.contentManager, exteriorDoor.game.tilesetSpriteSheet)
-        exteriorDoor.sprite.move(room.x * 64, room.y * 64)
+        exteriorDoor.sprite.move(room.x * room.game.tileset.gridSpacing, room.y * room.game.tileset.gridSpacing)
         exteriorDoor.sprite.loop(spritePrefix + "Closed")
         exteriorDoor.foregroundSprite = new SprigganSprite(exteriorDoor.game.foregroundGroup, exteriorDoor.game.contentManager, exteriorDoor.game.tilesetSpriteSheet)
-        exteriorDoor.foregroundSprite.move(room.x * 64, room.y * 64)
+        exteriorDoor.foregroundSprite.move(room.x * room.game.tileset.gridSpacing, room.y * room.game.tileset.gridSpacing)
         exteriorDoor.foregroundSprite.loop(spritePrefix + "Foreground")
     })
 }

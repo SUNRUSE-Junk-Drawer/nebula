@@ -22,7 +22,7 @@ function Character(faction, room, legName, torsoName, weaponName, headName, clic
         character.torsoSpriteGroup = new SpriteGroup(character.group, BattleContent, "character", [character.torsoName, character.weaponName, character.headName])
         character.torsoSpriteGroup.loop("idleDown")
         
-        character.group.move(character.room.x * 64, character.room.y * 64)
+        character.group.move(character.room.x * character.room.game.tileset.gridSpacing, character.room.y * character.room.game.tileset.gridSpacing)
         
         character.room.game.characters.push(character)
         character.room.characters.push(character)
@@ -82,8 +82,8 @@ Character.prototype.think = function() {
                     break
             }
             
-            var x = (next.x + character.room.x) * 32
-            var y = (next.y + character.room.y) * 32
+            var x = (next.x + character.room.x) * character.room.game.tileset.gridSpacing / 2
+            var y = (next.y + character.room.y) * character.room.game.tileset.gridSpacing / 2
             
             character.group.moveAtPixelsPerSecond(x - xDiff, y - yDiff, 100, function() {
                 link.enteredBy(character)
@@ -101,8 +101,8 @@ Character.prototype.think = function() {
     }
     
     if (!character.moving) {
-        var x = character.room.x * 64
-        var y = character.room.y * 64
+        var x = character.room.x * character.room.game.tileset.gridSpacing
+        var y = character.room.y * character.room.game.tileset.gridSpacing
         if (character.room.idleCharacters.length > 1) {
             var angle = character.room.idleCharacters.indexOf(character) * 2 * Math.PI / character.room.idleCharacters.length
             x += Math.sin(angle) * 8
