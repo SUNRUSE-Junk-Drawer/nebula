@@ -223,51 +223,51 @@ function MakeLink(type) {
     }
 }
 
-function Door(fromRoom, toRoom, sprite) {
-    var door = this
-    door.users = 0
-    door.fromRoom = fromRoom
-    door.toRoom = toRoom
-    door.linkToRooms()
+function InteriorDoor(fromRoom, toRoom, sprite) {
+    var interiorDoor = this
+    interiorDoor.users = 0
+    interiorDoor.fromRoom = fromRoom
+    interiorDoor.toRoom = toRoom
+    interiorDoor.linkToRooms()
     
-    door.animationPrefix = (sprite || "door") + Capitalize(door.orientation)
+    interiorDoor.animationPrefix = (sprite || "interiorDoor") + Capitalize(interiorDoor.orientation)
     
-    door.game = toRoom.game
+    interiorDoor.game = toRoom.game
     
-    door.game.contentLoaded.listen(function() {
-        door.sprite = new SprigganSprite(door.game.backgroundOverlayGroup, door.game.contentManager, door.game.tilesetSpriteSheet)
-        door.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
-        door.sprite.loop(door.animationPrefix + "Closed")
+    interiorDoor.game.contentLoaded.listen(function() {
+        interiorDoor.sprite = new SprigganSprite(interiorDoor.game.backgroundOverlayGroup, interiorDoor.game.contentManager, interiorDoor.game.tilesetSpriteSheet)
+        interiorDoor.sprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
+        interiorDoor.sprite.loop(interiorDoor.animationPrefix + "Closed")
         
-        door.foregroundSprite = new SprigganSprite(door.game.foregroundGroup, door.game.contentManager, door.game.tilesetSpriteSheet)
-        door.foregroundSprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
-        door.foregroundSprite.loop(door.animationPrefix + "Foreground")
+        interiorDoor.foregroundSprite = new SprigganSprite(interiorDoor.game.foregroundGroup, interiorDoor.game.contentManager, interiorDoor.game.tilesetSpriteSheet)
+        interiorDoor.foregroundSprite.move((fromRoom.x + toRoom.x) * 32, (fromRoom.y + toRoom.y) * 32)
+        interiorDoor.foregroundSprite.loop(interiorDoor.animationPrefix + "Foreground")
     })
 }
 
-MakeLink(Door)
+MakeLink(InteriorDoor)
 
-Door.prototype.enteredBy = function(character) {
-    var door = this
-    if (!door.users) door.sprite.play(door.animationPrefix + "Opening", function() {
-        door.sprite.loop(door.animationPrefix + "Opened")
+InteriorDoor.prototype.enteredBy = function(character) {
+    var interiorDoor = this
+    if (!interiorDoor.users) interiorDoor.sprite.play(interiorDoor.animationPrefix + "Opening", function() {
+        interiorDoor.sprite.loop(interiorDoor.animationPrefix + "Opened")
     })
-    door.users++
+    interiorDoor.users++
 }
 
-Door.prototype.leftBy = function(character) {
-    var door = this
-    door.users--
-    if (!door.users) door.sprite.play(door.animationPrefix + "Closing", function() {
-        door.sprite.loop(door.animationPrefix + "Closed")
+InteriorDoor.prototype.leftBy = function(character) {
+    var interiorDoor = this
+    interiorDoor.users--
+    if (!interiorDoor.users) interiorDoor.sprite.play(interiorDoor.animationPrefix + "Closing", function() {
+        interiorDoor.sprite.loop(interiorDoor.animationPrefix + "Closed")
     })
 }
 
-Door.prototype.walkable = function(fromRoom) {
+InteriorDoor.prototype.walkable = function(fromRoom) {
     return true
 }
 
-Door.prototype.blocksLineOfSight = function(fromRoom) {
+InteriorDoor.prototype.blocksLineOfSight = function(fromRoom) {
     return !this.users
 }
 
@@ -317,5 +317,20 @@ function Decoration(room, position, sprite) {
         decoration.sprite = new SprigganSprite(decoration.game.backgroundOverlayGroup, decoration.game.contentManager, decoration.game.tilesetSpriteSheet)
         decoration.sprite.move(room.x * 64, room.y * 64)
         decoration.sprite.loop(sprite + position[0].toUpperCase() + position.slice(1))
+    })
+}
+
+function ExteriorDoor(room, position, sprite) {
+    var exteriorDoor = this
+    exteriorDoor.room = room
+    exteriorDoor.game = room.game
+    var spritePrefix = (sprite || "exteriorDoor") + Capitalize(position)
+    exteriorDoor.game.contentLoaded.listen(function() {
+        exteriorDoor.sprite = new SprigganSprite(exteriorDoor.game.backgroundOverlayGroup, exteriorDoor.game.contentManager, exteriorDoor.game.tilesetSpriteSheet)
+        exteriorDoor.sprite.move(room.x * 64, room.y * 64)
+        exteriorDoor.sprite.loop(spritePrefix + "Closed")
+        exteriorDoor.foregroundSprite = new SprigganSprite(exteriorDoor.game.foregroundGroup, exteriorDoor.game.contentManager, exteriorDoor.game.tilesetSpriteSheet)
+        exteriorDoor.foregroundSprite.move(room.x * 64, room.y * 64)
+        exteriorDoor.foregroundSprite.loop(spritePrefix + "Foreground")
     })
 }

@@ -2,7 +2,8 @@ return {
     Game: Game,
     Room: Room,
     Path: Path,
-    Door: Door,
+    InteriorDoor: InteriorDoor,
+    ExteriorDoor: ExteriorDoor,
     Ledge: Ledge,
     ItemPickup: ItemPickup,
     Decoration: Decoration

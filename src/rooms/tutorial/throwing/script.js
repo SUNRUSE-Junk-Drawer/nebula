@@ -2,16 +2,18 @@ return function(game) {
     var pickup = new Battle.Room(game, 1, 2)
     new Battle.ItemPickup(pickup, "wrench")
     var spawn = new Battle.Room(game, 1, 1)
+    new Battle.ExteriorDoor(spawn, "right")
     
     var pathToDistraction = new Battle.Room(game, 0, 1)
     new Battle.Ledge(spawn, pathToDistraction)
     
     var distract = new Battle.Room(game, -1, 1)
+    new Battle.ExteriorDoor(distract, "left")
     
     new Battle.Path(spawn, pickup)
     
     
-    new Battle.Door(pathToDistraction, distract)
+    new Battle.InteriorDoor(pathToDistraction, distract)
     
     var pathToTargetA = new Battle.Room(game, -1, 0)
     
