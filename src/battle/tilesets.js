@@ -1,5 +1,6 @@
 var Tilesets = {
     leviathan: {
-        gridSpacing: 64
+        gridSpacing: 50,
+        linkLength: 10
     }
 }

@@ -69,16 +69,16 @@ Character.prototype.think = function() {
             
             switch (character.facing) {
                 case "up":
-                    yDiff = -20
+                    yDiff = -character.room.game.tileset.linkLength
                     break
                 case "down":
-                    yDiff = 20
+                    yDiff = character.room.game.tileset.linkLength
                     break
                 case "left":
-                    xDiff = -20
+                    xDiff = -character.room.game.tileset.linkLength
                     break
                 case "right":
-                    xDiff = 20
+                    xDiff = character.room.game.tileset.linkLength
                     break
             }
             
