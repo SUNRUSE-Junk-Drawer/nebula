@@ -33,7 +33,7 @@ function Game(savegame) {
     function LoadedContent() {
         game.viewport = new SprigganViewport(screenWidth, screenHeight)
         game.group = new SprigganGroup(game.viewport)
-        game.group.move(214, 88)
+        game.group.move(screenWidth / 2, (screenHeight - game.tileset.gridSpacing) / 2)
         game.backgroundGroup = new SprigganGroup(game.group)
         game.backgroundOverlayGroup = new SprigganGroup(game.group)
         game.itemPickupsGroup = new SprigganGroup(game.group)
