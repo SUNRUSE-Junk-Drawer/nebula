@@ -1,4 +1,4 @@
-function Order(faction, markerContainer, markerContentManager, markerAnimationName, markerX, markerY, canExecute, execute, onCancel) {
+function Order(faction, markerContainer, markerAnimationName, markerX, markerY, canExecute, execute, onCancel) {
     var order = this
     
     order.faction = faction
@@ -8,7 +8,7 @@ function Order(faction, markerContainer, markerContentManager, markerAnimationNa
     
     order.faction.orders.push(order)
     
-    order.markerSprite = new SprigganSprite(markerContainer, markerContentManager, "battle", function() {
+    order.markerSprite = new SprigganSprite(markerContainer, BattleContent, "battle/markers", function() {
         order.cancel()
     })
     order.markerSprite.move(markerX, markerY)

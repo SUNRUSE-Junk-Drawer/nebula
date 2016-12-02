@@ -12,6 +12,7 @@ function LoadBattle() {
         BattleContent.add(SprigganSpriteSheet, "character")
         BattleContent.add(SprigganSpriteSheet, "battle")
         BattleContent.add(SprigganSpriteSheet, "battle/itemPickups")
+        BattleContent.add(SprigganSpriteSheet, "battle/markers")
         BattleContent.add(SprigganSpriteSheet, "effects")
     } else AfterLoading()
     

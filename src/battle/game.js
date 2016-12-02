@@ -84,7 +84,7 @@ CombatMode.prototype.left = function() {}
 
 function PartyMemberSelectedMode(partyMember) { 
     this.partyMember = partyMember
-    this.sprite = new SprigganSprite(this.partyMember.character.group, this.partyMember.game.contentManager, "battle")
+    this.sprite = new SprigganSprite(this.partyMember.character.group, BattleContent, "battle/markers")
     this.sprite.loop("selected")
 }
 
@@ -125,7 +125,7 @@ ThrowingItemMode.prototype.clicked = function(clicked) {
     if (clicked instanceof ItemPickup) room = clicked.room
     if (!room) return
     mode.inventorySlot.reserveFor("throwing")
-    new Order(mode.game.partyFaction, mode.game.markersGroup, mode.game.contentManager, "throwingTo", room.x * mode.game.tileset.gridSpacing, room.y * mode.game.tileset.gridSpacing, CanExecute, Execute, Cancel)
+    new Order(mode.game.partyFaction, mode.game.markersGroup, "throwing", room.x * mode.game.tileset.gridSpacing, room.y * mode.game.tileset.gridSpacing, CanExecute, Execute, Cancel)
 
     function CanExecute(character) {
         return character.room.hasLineOfSightToRoom(room)

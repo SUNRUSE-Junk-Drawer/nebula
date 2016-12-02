@@ -1,7 +1,6 @@
 function PartyMember(room, weapon) {
     var partyMember = this
     partyMember.game = room.game
-    partyMember.game.contentManager.add(SprigganSpriteSheet, "battle")
     
     partyMember.character = new Character(partyMember.game.partyFaction, room, "brownTrousers", "leatherJacket", weapon, "orangeHair", Clicked)
     
