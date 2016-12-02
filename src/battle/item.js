@@ -96,9 +96,9 @@ var Items = {
     },
     wrench: {
         "throw": function(fromCharacter, toRoom) {
-            var sprite = new SprigganSprite(fromCharacter.room.game.effectsGroup, BattleContent, "items/icons")
+            var sprite = new SprigganSprite(fromCharacter.room.game.effectsGroup, BattleContent, "battle/itemPickups")
             sprite.move(fromCharacter.group.x(), fromCharacter.group.y())
-            sprite.loop("wrench")
+            sprite.loop("wrenchThrown")
             sprite.moveAtPixelsPerSecond(toRoom.x * toRoom.game.tileset.gridSpacing, toRoom.y * toRoom.game.tileset.gridSpacing, 250, function() {
                 sprite.dispose()
                 new ItemPickup(toRoom, "wrench")
@@ -111,7 +111,7 @@ function ItemPickup(room, itemName) {
     var itemPickup = this
     itemPickup.room = room
     room.game.contentLoaded.listen(function(){
-        itemPickup.sprite = new SprigganSprite(room.game.itemPickupsGroup, BattleContent, "items/icons", function(){
+        itemPickup.sprite = new SprigganSprite(room.game.itemPickupsGroup, BattleContent, "battle/itemPickups", function(){
             room.game.mode.clicked(itemPickup)
         })
         room.arrived.listen(PerformPickup)
