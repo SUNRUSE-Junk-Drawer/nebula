@@ -3,16 +3,17 @@ function Inventory(game) {
     inventory.game = game
     inventory.opened = false
     inventory.viewport = new SprigganViewport(screenWidth, screenHeight, "right", "bottom")
-    inventory.icon = new SprigganSprite(inventory.viewport, BattleContent, "battle", ToggleInventory)
+    inventory.icon = new SprigganSprite(inventory.viewport, BattleContent, "battle/inventory", ToggleInventory)
+    inventory.icon.move(screenWidth, screenHeight)
     function ToggleInventory() {
         inventory.opened = !inventory.opened
         inventory.refresh()
     }
     
     inventory.panelGroup = new SprigganGroup(inventory.viewport)
-    inventory.panelGroup.move(120, 0)
-    inventory.panelBackground = new SprigganSprite(inventory.panelGroup, game.contentManager, "battle")
-    inventory.panelBackground.loop("inventoryPanel")
+    inventory.panelGroup.move(screenWidth + 120, screenHeight)
+    inventory.panelBackground = new SprigganSprite(inventory.panelGroup, BattleContent, "battle/inventory")
+    inventory.panelBackground.loop("panel")
     
     inventory.slots = []
     for (var y = 0; y < 4; y++) {
@@ -30,8 +31,8 @@ Inventory.prototype.close = function() {
 }
 
 Inventory.prototype.refresh = function() {
-    this.icon.loop(this.opened ? "inventoryOpened" : "inventoryClosed")
-    this.panelGroup.moveAtPixelsPerSecond(this.opened ? 0 : 120, 0, 1000)
+    this.icon.loop(this.opened ? "iconOpen" : "iconClosed")
+    this.panelGroup.moveAtPixelsPerSecond(screenWidth + (this.opened ? 0 : 120), screenHeight, 1000)
 }
 
 Inventory.prototype.tryToAcquire = function(itemName) {
@@ -40,12 +41,12 @@ Inventory.prototype.tryToAcquire = function(itemName) {
         if (inventory.game.savegame.inventory[i]) continue
         inventory.game.savegame.inventory[i] = itemName
         inventory.slots[i].refresh()
-        inventory.icon.play("inventoryAdded", function() {
+        inventory.icon.play("iconAdded", function() {
             inventory.refresh()
         })
         return true
     }
-    inventory.icon.play("inventoryFull", function() {
+    inventory.icon.play("iconFull", function() {
         inventory.refresh()
     })
     return false
@@ -73,10 +74,10 @@ function InventorySlot(inventory, x, y) {
         inventory.game.mode.clicked(inventorySlot)
     })
     
-    inventorySlot.group.move(330 + x * 39, 63 + y * 39)
+    inventorySlot.group.move(x * 39 - 98, y * 39 - 178)
     
     inventorySlot.itemSprite = new SprigganSprite(inventorySlot.group, BattleContent, "items/icons")
-    inventorySlot.statusSprite = new SprigganSprite(inventorySlot.group, BattleContent, "battle")
+    inventorySlot.statusSprite = new SprigganSprite(inventorySlot.group, BattleContent, "battle/inventory")
 
     inventorySlot.refresh()
 }
@@ -87,12 +88,12 @@ InventorySlot.prototype.refresh = function() {
         this.item = Items[this.itemName]
         this.itemSprite.loop(this.itemName)
         this.itemSprite.show()
-        this.statusSprite.loop("inventorySlot" + (this.reservedFor ? Capitalize(this.reservedFor) : "Occupied"))
+        this.statusSprite.loop("slot" + (this.reservedFor ? Capitalize(this.reservedFor) : "Occupied"))
         
     } else {
         this.item = null
         this.itemSprite.hide()
-        this.statusSprite.loop("inventorySlotEmpty")
+        this.statusSprite.loop("slotEmpty")
     }
 }
 

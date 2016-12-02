@@ -8,6 +8,7 @@ function LoadBattle() {
             AfterLoading()
         })
         BattleContent.add(SprigganJavaScript, "battle.js")
+        BattleContent.add(SprigganSpriteSheet, "battle/inventory")
         BattleContent.add(SprigganSpriteSheet, "character")
         BattleContent.add(SprigganSpriteSheet, "battle")
         BattleContent.add(SprigganSpriteSheet, "effects")
