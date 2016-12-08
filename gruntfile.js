@@ -67,6 +67,9 @@ module.exports = function(grunt) {
         },
         "sprigganjs-aseprite": {
             all: {
+                options: {
+                    sheetWidth: 256
+                },
                 files: [{
                     expand: true,
                     src: "**/*.ase",
