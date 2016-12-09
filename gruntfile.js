@@ -10,10 +10,10 @@ module.exports = function(grunt) {
             dist: "dist/**/*"
         },
         copy: {
-            png: {
+            mp3: {
                 files: [{
                     expand: true,
-                    src: "**/*.png",
+                    src: "**/*.mp3",
                     dest: "dist",
                     cwd: "src"
                 }]
@@ -89,7 +89,8 @@ module.exports = function(grunt) {
                     "clean:dist", 
                     "htmlmin",
                     "uglify",
-                    "sprigganjs-aseprite"
+                    "sprigganjs-aseprite",
+                    "copy:mp3"
                 ]
             }
         }
