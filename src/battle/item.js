@@ -1,3 +1,9 @@
+function ShouldAttackCharacter(attacker, target) {
+    if (!target.health) return false
+    if (!attacker.faction.shouldAttack(target.faction)) return false
+    return true
+}
+
 var Items = {
     sword: {
         weapon: {
@@ -6,14 +12,14 @@ var Items = {
                 return fromRoom == toRoom
             },
             handle: function(character) {
-                function FindEnemy() {
+                function FindEnemy() {                    
                     // Prioritize people who aren't leaving.
-                    for (var i = 0; i < character.room.idleCharacters.length; i++) 
-                        if (character.faction.shouldAttack(character.room.idleCharacters[i].faction)) 
+                    for (var i = 0; i < character.room.idleCharacters.length; i++)
+                        if (ShouldAttackCharacter(character, character.room.idleCharacters[i]))
                             return character.room.idleCharacters[i]
                     
                     for (var i = 0; i < character.room.characters.length; i++) 
-                        if (character.faction.shouldAttack(character.room.characters[i].faction)) 
+                        if (ShouldAttackCharacter(character, character.room.characters[i]))
                             return character.room.characters[i]
                         
                     return null
@@ -34,6 +40,7 @@ var Items = {
                                         character.think()
                                     })
                                 } else {
+                                    enemy.hurt(3)
                                     character.facing = DirectionBetween(character.group.x(), character.group.y(), enemy.group.x(), enemy.group.y())
                                     character.torsoSpriteGroup.play("swipeSword" + (swiped ? "B" : "A") + Capitalize(character.facing), Swipe)
                                     swiped = !swiped
@@ -57,11 +64,9 @@ var Items = {
                 function FindEnemy() {
                     var enemies = []
                     character.room.emitLineOfSight(1000, true, function(room) {
-                        for (var i = 0; i < room.characters.length; i++) {
-                            var enemy = room.characters[i]
-                            if (!character.faction.shouldAttack(enemy.faction)) continue
-                            enemies.push(enemy)
-                        }
+                        for (var i = 0; i < room.characters.length; i++) 
+                            if (ShouldAttackCharacter(character, room.characters[i]))
+                                enemies.push(room.characters[i])
                     })
                     
                     // TODO: Pick closest/best?
@@ -82,6 +87,7 @@ var Items = {
                                         character.think()
                                     })
                                 } else {
+                                    enemy.hurt(1)
                                     character.facing = DirectionBetween(character.group.x(), character.group.y(), enemy.group.x(), enemy.group.y())
                                     character.torsoSpriteGroup.play("firePistol" + Capitalize(character.facing), Fire)
                                 }

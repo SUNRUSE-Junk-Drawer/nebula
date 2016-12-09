@@ -9,6 +9,7 @@ function Character(faction, room, legName, torsoName, weaponName, headName, clic
     character.layers = []
     character.destination = room
     character.facing = "down"
+    character.health = character.healthLimit = 6
     
     faction.orderGiven.listen(function() {
         character.think()
@@ -16,6 +17,17 @@ function Character(faction, room, legName, torsoName, weaponName, headName, clic
     
     character.room.game.contentLoaded.listen(function(){
         character.group = new SprigganGroup(character.room.game.charactersGroup, clicked)
+        
+        var healthSpriteSpacing = 2
+        
+        character.healthSprites = []
+        while (character.healthSprites.length < character.healthLimit) {
+            var healthSprite = new SprigganSprite(character.group, BattleContent, "battle/markers")
+            healthSprite.hide()
+            healthSprite.loop("healthGood")
+            healthSprite.move(healthSpriteSpacing * (character.healthSprites.length + 0.5 - character.healthLimit / 2), 0)
+            character.healthSprites.push(healthSprite)
+        }
         
         character.legSpriteGroup = new SpriteGroup(character.group, BattleContent, "character", [character.legName])
         character.legSpriteGroup.loop("idleDown")
@@ -33,6 +45,26 @@ function Character(faction, room, legName, torsoName, weaponName, headName, clic
     })
 }
 
+Character.prototype.hurt = function(damage) {
+    if (!this.health) return
+    
+    var newHealth = Math.max(0, this.health - damage)
+    
+    if (this.health == this.healthLimit) 
+        for (var i = 0; i < this.healthLimit; i++) this.healthSprites[i].show()
+    
+    for (var i = newHealth; i < this.health; i++)
+        this.healthSprites[i].loop("healthBad")
+    
+    this.health = newHealth
+    this.think()
+    if (!this.health) {
+        for (var i = 0; i < this.healthLimit; i++) this.healthSprites[i].dispose()
+        this.legSpriteGroup.play("death")
+        this.torsoSpriteGroup.play("death")
+    }
+}
+
 Character.prototype.setDestination = function(room) {
     var character = this
     character.destination = room
@@ -41,6 +73,8 @@ Character.prototype.setDestination = function(room) {
 
 Character.prototype.think = function() {
     var character = this
+    
+    if (!character.health) return
 
     if (!character.moving) {
         var newDirection = character.room.navigateTo(function(room) {
