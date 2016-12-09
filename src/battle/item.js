@@ -87,6 +87,7 @@ var Items = {
                                         character.think()
                                     })
                                 } else {
+                                    BattleContent.sounds.pistolFire.play()
                                     enemy.hurt(1)
                                     character.facing = DirectionBetween(character.group.x(), character.group.y(), enemy.group.x(), enemy.group.y())
                                     character.torsoSpriteGroup.play("firePistol" + Capitalize(character.facing), Fire)
