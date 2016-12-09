@@ -16,7 +16,9 @@ function LoadBattle() {
         BattleContent.add(SprigganSpriteSheet, "effects")
         
         BattleContent.sounds = {
-            pistolFire: new SoundSet(BattleContent, "battle/pistolFire", 4)
+            pistolFire: new SoundSet(BattleContent, "battle/pistolFire", 4),
+            pistolDraw: new SoundSet(BattleContent, "battle/pistolDraw", 1),
+            pistolStow: new SoundSet(BattleContent, "battle/pistolStow", 1)
         }
     } else AfterLoading()
     

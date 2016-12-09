@@ -78,10 +78,12 @@ var Items = {
                     if (enemy) {
                         character.acting = true
                         character.facing = DirectionBetween(character.group.x(), character.group.y(), enemy.group.x(), enemy.group.y())
+                        BattleContent.sounds.pistolDraw.play()
                         character.torsoSpriteGroup.play("drawPistol" + Capitalize(character.facing), function() {
                             function Fire() {
                                 var enemy = FindEnemy()
                                 if (!enemy) {
+                                    BattleContent.sounds.pistolStow.play()
                                     character.torsoSpriteGroup.play("stowPistol" + Capitalize(character.facing), function() {
                                         character.acting = false
                                         character.think()
