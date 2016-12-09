@@ -334,3 +334,12 @@ function ExteriorDoor(room, position, sprite) {
         exteriorDoor.foregroundSprite.loop(spritePrefix + "Foreground")
     })
 }
+
+function EnemySpawnPoint(room) {
+    var enemySpawnPoint = this
+    enemySpawnPoint.room = room
+    enemySpawnPoint.game = room.game
+    enemySpawnPoint.game.contentLoaded.listen(function() {
+        new Enemy(room)
+    })
+}

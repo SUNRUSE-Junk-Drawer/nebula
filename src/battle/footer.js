@@ -6,5 +6,6 @@ return {
     ExteriorDoor: ExteriorDoor,
     Ledge: Ledge,
     ItemPickup: ItemPickup,
-    Decoration: Decoration
+    Decoration: Decoration,
+    EnemySpawnPoint: EnemySpawnPoint
 }

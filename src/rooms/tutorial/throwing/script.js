@@ -47,6 +47,12 @@ return function(game) {
     new Battle.Decoration(pathToTargetC, "top", "window")
     new Battle.Decoration(pathToTargetD, "top", "window")
     
+    new Battle.EnemySpawnPoint(distract)
+    new Battle.EnemySpawnPoint(distract)
+    new Battle.EnemySpawnPoint(distract)
+    new Battle.EnemySpawnPoint(distract)
+    new Battle.EnemySpawnPoint(distract)
+    
     game.spawnRoom = spawn    
     game.tilesetName = "leviathan"
 }
