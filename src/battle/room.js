@@ -249,18 +249,24 @@ MakeLink(InteriorDoor)
 
 InteriorDoor.prototype.enteredBy = function(character) {
     var interiorDoor = this
-    if (!interiorDoor.users) interiorDoor.sprite.play(interiorDoor.animationPrefix + "Opening", function() {
-        interiorDoor.sprite.loop(interiorDoor.animationPrefix + "Opened")
-    })
+    if (!interiorDoor.users) {
+        BattleContent.sounds.openDoor.play()
+        interiorDoor.sprite.play(interiorDoor.animationPrefix + "Opening", function() {
+            interiorDoor.sprite.loop(interiorDoor.animationPrefix + "Opened")
+        })
+    }
     interiorDoor.users++
 }
 
 InteriorDoor.prototype.leftBy = function(character) {
     var interiorDoor = this
     interiorDoor.users--
-    if (!interiorDoor.users) interiorDoor.sprite.play(interiorDoor.animationPrefix + "Closing", function() {
-        interiorDoor.sprite.loop(interiorDoor.animationPrefix + "Closed")
-    })
+    if (!interiorDoor.users) {
+        BattleContent.sounds.closeDoor.play()
+        interiorDoor.sprite.play(interiorDoor.animationPrefix + "Closing", function() {            
+            interiorDoor.sprite.loop(interiorDoor.animationPrefix + "Closed")
+        })
+    }
 }
 
 InteriorDoor.prototype.walkable = function(fromRoom) {

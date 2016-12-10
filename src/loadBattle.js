@@ -22,7 +22,9 @@ function LoadBattle() {
             pistolStow: new SoundSet(BattleContent, "battle/pistolStow", 1),
             throwWrench: new SoundSet(BattleContent, "battle/throwWrench", 1),
             hitWrench: new SoundSet(BattleContent, "battle/hitWrench", 1),
-            pickUpWrench: new SoundSet(BattleContent, "battle/pickUpWrench", 1)
+            pickUpWrench: new SoundSet(BattleContent, "battle/pickUpWrench", 1),
+            openDoor: new SoundSet(BattleContent, "battle/openDoor", 1),
+            closeDoor: new SoundSet(BattleContent, "battle/closeDoor", 1)
         }
     } else AfterLoading()
     
