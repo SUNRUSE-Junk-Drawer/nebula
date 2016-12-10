@@ -89,10 +89,50 @@ var Items = {
                                         character.think()
                                     })
                                 } else {
-                                    BattleContent.sounds.pistolFire.play()
-                                    enemy.hurt(1)
                                     character.facing = DirectionBetween(character.group.x(), character.group.y(), enemy.group.x(), enemy.group.y())
                                     character.torsoSpriteGroup.play("firePistol" + Capitalize(character.facing), Fire)
+                                    BattleContent.sounds.pistolFire.play()
+                                    var tracer = new SprigganSprite(character.room.game.effectsGroup, BattleContent, "effects")
+                                    tracer.loop("pistolTracer" + Capitalize(character.facing))
+                                    
+                                    var x = character.group.x()
+                                    var y = character.group.y()
+                                    switch (character.facing) {
+                                        case "down": 
+                                            y += 10
+                                            break
+                                        case "up": 
+                                            y -= 10
+                                            break
+                                        case "right": 
+                                            x += 10
+                                            break
+                                        case "left": 
+                                            x -= 10
+                                            break
+                                    }
+                                    tracer.move(x, y)
+                                    
+                                    x = enemy.group.x()
+                                    y = enemy.group.y()
+                                    switch (character.facing) {
+                                        case "down": 
+                                            y -= 5
+                                            break
+                                        case "up": 
+                                            y += 5
+                                            break
+                                        case "right": 
+                                            x -= 5
+                                            break
+                                        case "left": 
+                                            x += 5
+                                            break
+                                    }
+                                    tracer.moveAtPixelsPerSecond(x, y, 600, function() {
+                                        enemy.hurt(1)
+                                        tracer.dispose()
+                                    })
                                 }
                             }
                             
