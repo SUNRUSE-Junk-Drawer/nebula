@@ -89,9 +89,20 @@ Character.prototype.think = function() {
             character.facing = newDirection
             var link = character.room.links[newDirection]
             var next = link.roomOpposite(character.room)
-            character.moving = true
             
-            character.legSpriteGroup.loop("walk" + Capitalize(character.facing))
+            if (!character.moving) {
+                var foot = "left"
+                
+                function TakeStep() {
+                    foot = foot == "left" ? "right" : "left"
+                    BattleContent.sounds.footstep.play()
+                    character.legSpriteGroup.play("walk" + (foot == "left" ? "A" : "B") + Capitalize(character.facing), TakeStep)
+                }
+                
+                TakeStep()
+            }
+            
+            character.moving = true
 
             // Walking over a link is a four step process:
             // - Walk 20 pixels in front of the boundary our side.
