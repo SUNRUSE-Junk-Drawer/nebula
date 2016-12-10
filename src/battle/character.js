@@ -1,6 +1,7 @@
 function Character(faction, room, legName, torsoName, weaponName, headName, clicked) {
     var character = this
     character.faction = faction
+    character.faction.characters.push(character)
     character.room = room
     character.legName = legName
     character.torsoName = torsoName
