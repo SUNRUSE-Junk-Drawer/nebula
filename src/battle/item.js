@@ -169,7 +169,8 @@ function ItemPickup(room, itemName) {
         })
         room.arrived.listen(PerformPickup)
         function PerformPickup(){
-            if (room.game.inventory.tryToAcquire(itemName)) itemPickup.sprite.dispose()
+            if (!room.game.inventory.tryToAcquire(itemName)) return
+            itemPickup.sprite.dispose()
             BattleContent.sounds.pickUpWrench.play()
             room.arrived.unlisten(PerformPickup)
         }
