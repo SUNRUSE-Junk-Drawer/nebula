@@ -131,7 +131,9 @@ var Items = {
                                     }
                                     tracer.moveAtPixelsPerSecond(x, y, 600, function() {
                                         enemy.hurt(1)
-                                        tracer.dispose()
+                                        tracer.play("pistolImpact" + Capitalize(character.facing), function() {
+                                            tracer.dispose()
+                                        })
                                     })
                                 }
                             }
