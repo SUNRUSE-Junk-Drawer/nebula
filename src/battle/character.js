@@ -89,8 +89,10 @@ Character.prototype.think = function() {
             character.facing = newDirection
             var link = character.room.links[newDirection]
             var next = link.roomOpposite(character.room)
+            character.moving = true
             
-            if (!character.moving) {
+            if (!character.walking) {
+                character.walking = true
                 var foot = "left"
                 
                 function TakeStep() {
@@ -102,7 +104,7 @@ Character.prototype.think = function() {
                 TakeStep()
             }
             
-            character.moving = true
+            
 
             // Walking over a link is a four step process:
             // - Walk 20 pixels in front of the boundary our side.
@@ -146,6 +148,8 @@ Character.prototype.think = function() {
     }
     
     if (!character.moving) {
+        character.walking = false
+        
         var x = character.room.x * character.room.game.tileset.gridSpacing
         var y = character.room.y * character.room.game.tileset.gridSpacing
         if (character.room.idleCharacters.length > 1) {
