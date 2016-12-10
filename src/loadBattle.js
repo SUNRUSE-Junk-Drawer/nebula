@@ -19,7 +19,10 @@ function LoadBattle() {
             footstep: new SoundSet(BattleContent, "battle/footstep", 4),
             pistolFire: new SoundSet(BattleContent, "battle/pistolFire", 4),
             pistolDraw: new SoundSet(BattleContent, "battle/pistolDraw", 1),
-            pistolStow: new SoundSet(BattleContent, "battle/pistolStow", 1)
+            pistolStow: new SoundSet(BattleContent, "battle/pistolStow", 1),
+            throwWrench: new SoundSet(BattleContent, "battle/throwWrench", 1),
+            hitWrench: new SoundSet(BattleContent, "battle/hitWrench", 1),
+            pickUpWrench: new SoundSet(BattleContent, "battle/pickUpWrench", 1)
         }
     } else AfterLoading()
     
