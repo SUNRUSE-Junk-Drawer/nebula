@@ -100,7 +100,7 @@ HeroSelectedMode.prototype.clicked = function(clicked) {
     } else {
         var room
         if (clicked instanceof Room) room = clicked
-        if (clicked instanceof Enemy) room = clicked.character.room
+        if (clicked instanceof EnemyController) room = clicked.character.room
         if (clicked instanceof ItemPickup) room = clicked.room
         if (!room) return
         this.heroController.character.setDestination(room)
@@ -126,7 +126,7 @@ ThrowingItemMode.prototype.clicked = function(clicked) {
     
     var room
     if (clicked instanceof Room) room = clicked
-    if (clicked instanceof Enemy) room = clicked.character.room
+    if (clicked instanceof EnemyController) room = clicked.character.room
     if (clicked instanceof HeroController) room = clicked.character.room
     if (clicked instanceof ItemPickup) room = clicked.room
     if (!room) return
