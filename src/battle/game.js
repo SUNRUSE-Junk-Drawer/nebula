@@ -25,8 +25,8 @@ function Game(savegame) {
         game.tilesetSpriteSheet = "battle/tilesets/" + game.tilesetName
         game.contentManager.add(SprigganSpriteSheet, game.tilesetSpriteSheet)
         
-        new PartyMember(game.spawnRoom, "pistol")
-        new PartyMember(game.spawnRoom, "sword")
+        new HeroController(game.spawnRoom, "pistol")
+        new HeroController(game.spawnRoom, "sword")
         roomScriptContentManager.dispose()
     }
     
@@ -72,7 +72,7 @@ Game.prototype.setMode = function(mode) {
 function CombatMode() { }
 
 CombatMode.prototype.clicked = function(clicked) {
-    if (clicked instanceof PartyMember) this.game.setMode(new PartyMemberSelectedMode(clicked))
+    if (clicked instanceof HeroController) this.game.setMode(new HeroSelectedMode(clicked))
     if (clicked instanceof InventorySlot) {
         if (clicked.reservedFor) return
         if (!clicked.item) return
@@ -84,35 +84,35 @@ CombatMode.prototype.entered = function() {}
 CombatMode.prototype.showInventory = true
 CombatMode.prototype.left = function() {}
 
-function PartyMemberSelectedMode(partyMember) { 
-    this.partyMember = partyMember
-    this.sprite = new SprigganSprite(this.partyMember.character.group, BattleContent, "battle/markers")
+function HeroSelectedMode(heroController) { 
+    this.heroController = heroController
+    this.sprite = new SprigganSprite(this.heroController.character.group, BattleContent, "battle/markers")
     this.sprite.loop("selected")
 }
 
-PartyMemberSelectedMode.prototype.entered = function() {}
+HeroSelectedMode.prototype.entered = function() {}
 
-PartyMemberSelectedMode.prototype.clicked = function(clicked) {
-    if (clicked == this.partyMember) {
+HeroSelectedMode.prototype.clicked = function(clicked) {
+    if (clicked == this.heroController) {
         this.game.setMode(new CombatMode())
-    } else if (clicked instanceof PartyMember) {
-        this.game.setMode(new PartyMemberSelectedMode(clicked))
+    } else if (clicked instanceof HeroController) {
+        this.game.setMode(new HeroSelectedMode(clicked))
     } else {
         var room
         if (clicked instanceof Room) room = clicked
         if (clicked instanceof Enemy) room = clicked.character.room
         if (clicked instanceof ItemPickup) room = clicked.room
         if (!room) return
-        this.partyMember.character.setDestination(room)
+        this.heroController.character.setDestination(room)
         this.game.setMode(new CombatMode())
     }
 }
 
-PartyMemberSelectedMode.prototype.left = function() {
+HeroSelectedMode.prototype.left = function() {
     this.sprite.dispose()
 }
 
-PartyMemberSelectedMode.prototype.showInventory = true
+HeroSelectedMode.prototype.showInventory = true
 
 function ThrowingItemMode(inventorySlot) {
     this.inventorySlot = inventorySlot
@@ -127,7 +127,7 @@ ThrowingItemMode.prototype.clicked = function(clicked) {
     var room
     if (clicked instanceof Room) room = clicked
     if (clicked instanceof Enemy) room = clicked.character.room
-    if (clicked instanceof PartyMember) room = clicked.character.room
+    if (clicked instanceof HeroController) room = clicked.character.room
     if (clicked instanceof ItemPickup) room = clicked.room
     if (!room) return
     mode.inventorySlot.reserveFor("throwing")

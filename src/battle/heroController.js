@@ -1,11 +1,11 @@
-function PartyMember(room, weapon) {
-    var partyMember = this
-    partyMember.game = room.game
+function HeroController(room, weapon) {
+    var heroController = this
+    heroController.game = room.game
     
-    partyMember.character = new Character(partyMember.game.partyFaction, room, "brownTrousers", "leatherJacket", weapon, "orangeHair", Clicked)
+    heroController.character = new Character(heroController.game.partyFaction, room, "brownTrousers", "leatherJacket", weapon, "orangeHair", Clicked)
     
     function Clicked() {
-        partyMember.game.mode.clicked(partyMember)
+        heroController.game.mode.clicked(heroController)
     }
     
     // partyMember.character.contentLoaded.listen(function() {
