@@ -1,4 +1,4 @@
-function HumanActor(faction, room, legName, torsoName, weaponName, headName, initialX, initialY) {
+function HumanActor(faction, room, legName, torsoName, weaponName, headName, initialX, initialY, initialFacingDirection) {
     var actor = this
     actor.faction = faction
     actor.faction.actors.push(actor)
@@ -9,7 +9,7 @@ function HumanActor(faction, room, legName, torsoName, weaponName, headName, ini
     actor.headName = headName
     actor.layers = []
     actor.destination = room
-    actor.facing = "down"
+    actor.facing = initialFacingDirection
     actor.health = actor.healthLimit = 6
     actor.initialX = initialX
     actor.initialY = initialY
