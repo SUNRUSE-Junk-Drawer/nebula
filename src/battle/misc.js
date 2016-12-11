@@ -37,7 +37,7 @@ function ReverseDirection(direction) {
         case "up": return "down"
         case "down": return "up"
         case "left": return "right"
-        case "right": return "up"
+        case "right": return "left"
         case null: return null
     }
 }
