@@ -53,6 +53,5 @@ return function(game) {
     new Battle.EnemySpawnPoint(distract)
     new Battle.EnemySpawnPoint(distract)
     
-    game.spawnRoom = spawn    
     game.tilesetName = "leviathan"
 }

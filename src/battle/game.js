@@ -6,6 +6,8 @@ function Game(savegame) {
     game.interactionModeChanged = new SprigganEventRecurring()
     game.contentLoaded = new SprigganEventOnce()
     
+    game.exteriorDoors = {}
+    
     // TODO: is this used?
     game.actors = []
     
@@ -26,8 +28,8 @@ function Game(savegame) {
         game.tilesetSpriteSheet = "battle/tilesets/" + game.tilesetName
         game.contentManager.add(SprigganSpriteSheet, game.tilesetSpriteSheet)
         
-        new HeroController().bindTo(new HumanActor(game.partyFaction, game.spawnRoom, "brownTrousers", "leatherJacket", "pistol", "orangeHair"))
-        new HeroController().bindTo(new HumanActor(game.partyFaction, game.spawnRoom, "brownTrousers", "leatherJacket", "pistol", "orangeHair"))
+        new HeroController().bindTo(new HumanActor(game.partyFaction, game.exteriorDoors[game.savegame.fromDoor].room, "brownTrousers", "leatherJacket", "pistol", "orangeHair"))
+
         roomScriptContentManager.dispose()
     }
     
@@ -111,6 +113,7 @@ ExitingMode.prototype.entered = function() {
             if (actor.room != mode.exteriorDoor.room) return
         }
         mode.game.viewport.dispose()
+        mode.game.savegame.fromDoor = mode.game.savegame.roomPath
         mode.game.savegame.roomPath = mode.exteriorDoor.roomPath
         new Game(mode.game.savegame)
     }
