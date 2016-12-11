@@ -341,7 +341,16 @@ function ExteriorDoor(room, position, sprite, roomPath) {
         
         exteriorDoor.sprite = new SprigganSprite(exteriorDoor.game.backgroundOverlayGroup, exteriorDoor.game.contentManager, exteriorDoor.game.tilesetSpriteSheet, Clicked)
         exteriorDoor.sprite.move(room.x * room.game.tileset.gridSpacing, room.y * room.game.tileset.gridSpacing)
-        exteriorDoor.sprite.loop(spritePrefix + "Closed")
+        
+        if (exteriorDoor.roomPath == exteriorDoor.game.savegame.fromDoor) {
+            BattleContent.sounds.closeDoor.play()
+            exteriorDoor.sprite.play(spritePrefix + "Open", function() {
+                exteriorDoor.sprite.play(spritePrefix + "Closing", function() {
+                    exteriorDoor.sprite.loop(spritePrefix + "Closed")
+                })
+            })
+        } else exteriorDoor.sprite.loop(spritePrefix + "Closed")
+        
         exteriorDoor.foregroundSprite = new SprigganSprite(exteriorDoor.game.foregroundGroup, exteriorDoor.game.contentManager, exteriorDoor.game.tilesetSpriteSheet, Clicked)
         exteriorDoor.foregroundSprite.move(room.x * room.game.tileset.gridSpacing, room.y * room.game.tileset.gridSpacing)
         exteriorDoor.foregroundSprite.loop(spritePrefix + "Foreground")
@@ -357,6 +366,6 @@ function EnemySpawnPoint(room) {
     enemySpawnPoint.room = room
     enemySpawnPoint.game = room.game
     enemySpawnPoint.game.contentLoaded.listen(function() {
-        new EnemyController().bindTo(new HumanActor(enemySpawnPoint.game.enemyFaction, enemySpawnPoint.room, "brownTrousers", "leatherJacket", "pistol", "orangeHair"))
+        new EnemyController().bindTo(new HumanActor(enemySpawnPoint.game.enemyFaction, enemySpawnPoint.room, "brownTrousers", "leatherJacket", "pistol", "orangeHair", enemySpawnPoint.room.x * enemySpawnPoint.game.tileset.gridSpacing, enemySpawnPoint.room.y * enemySpawnPoint.game.tileset.gridSpacing))
     })
 }

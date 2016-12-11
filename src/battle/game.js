@@ -27,8 +27,6 @@ function Game(savegame) {
         game.tileset = Tilesets[game.tilesetName]
         game.tilesetSpriteSheet = "battle/tilesets/" + game.tilesetName
         game.contentManager.add(SprigganSpriteSheet, game.tilesetSpriteSheet)
-        
-        new HeroController().bindTo(new HumanActor(game.partyFaction, game.exteriorDoors[game.savegame.fromDoor].room, "brownTrousers", "leatherJacket", "pistol", "orangeHair"))
 
         roomScriptContentManager.dispose()
     }
@@ -46,6 +44,9 @@ function Game(savegame) {
         game.foregroundGroup = new SprigganGroup(game.group)
 
         game.contentLoaded.raise()
+        
+        var door = game.exteriorDoors[game.savegame.fromDoor]
+        new HeroController().bindTo(new HumanActor(game.partyFaction, door.room, "brownTrousers", "leatherJacket", "pistol", "orangeHair", door.walkX, door.walkY))
         
         game.inventory = new Inventory(game)
         game.playPause = new PlayPause(game)

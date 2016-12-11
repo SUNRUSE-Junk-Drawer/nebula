@@ -1,4 +1,4 @@
-function HumanActor(faction, room, legName, torsoName, weaponName, headName) {
+function HumanActor(faction, room, legName, torsoName, weaponName, headName, initialX, initialY) {
     var actor = this
     actor.faction = faction
     actor.faction.actors.push(actor)
@@ -11,6 +11,8 @@ function HumanActor(faction, room, legName, torsoName, weaponName, headName) {
     actor.destination = room
     actor.facing = "down"
     actor.health = actor.healthLimit = 6
+    actor.initialX = initialX
+    actor.initialY = initialY
     
     faction.orderGiven.listen(function() {
         actor.think()
@@ -41,7 +43,7 @@ HumanActor.prototype.setup = function() {
         actor.torsoSpriteGroup = new SpriteGroup(actor.group, BattleContent, "character", [actor.torsoName, actor.weaponName, actor.headName])
         actor.torsoSpriteGroup.loop("idleDown")
         
-        actor.group.move(actor.room.x * actor.room.game.tileset.gridSpacing, actor.room.y * actor.room.game.tileset.gridSpacing)
+        actor.group.move(actor.initialX, actor.initialY)
         
         actor.room.game.actors.push(actor)
         actor.room.actors.push(actor)
