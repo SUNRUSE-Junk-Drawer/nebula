@@ -1,4 +1,4 @@
-function HumanActor(faction, room, legName, torsoName, weaponName, headName, clicked) {
+function HumanActor(faction, room, legName, torsoName, weaponName, headName) {
     var actor = this
     actor.faction = faction
     actor.faction.actors.push(actor)
@@ -15,9 +15,15 @@ function HumanActor(faction, room, legName, torsoName, weaponName, headName, cli
     faction.orderGiven.listen(function() {
         actor.think()
     })
+}
+
+HumanActor.prototype.setup = function() {
+    var actor = this
     
-    actor.room.game.contentLoaded.listen(function(){
-        actor.group = new SprigganGroup(actor.room.game.actorsGroup, clicked)
+    actor.room.game.contentLoaded.listen(function() {
+        actor.group = new SprigganGroup(actor.room.game.actorsGroup, function() {
+            actor.room.game.mode.clicked(actor)
+        })
         
         var healthSpriteSpacing = 2
         
@@ -78,9 +84,7 @@ HumanActor.prototype.think = function() {
     if (!actor.health) return
 
     if (!actor.moving) {
-        var newDirection = actor.room.navigateTo(function(room) {
-            return room == actor.destination
-        })
+        var newDirection = actor.controller.getDirectionToMove()
         
         if (!newDirection) {
             actor.destination = actor.room

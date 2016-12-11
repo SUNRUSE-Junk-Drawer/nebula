@@ -26,8 +26,8 @@ function Game(savegame) {
         game.tilesetSpriteSheet = "battle/tilesets/" + game.tilesetName
         game.contentManager.add(SprigganSpriteSheet, game.tilesetSpriteSheet)
         
-        new HeroController(game.spawnRoom, "pistol")
-        new HeroController(game.spawnRoom, "sword")
+        new HeroController().bindTo(new HumanActor(game.partyFaction, game.spawnRoom, "brownTrousers", "leatherJacket", "pistol", "orangeHair"))
+        new HeroController().bindTo(new HumanActor(game.partyFaction, game.spawnRoom, "brownTrousers", "leatherJacket", "pistol", "orangeHair"))
         roomScriptContentManager.dispose()
     }
     
@@ -73,7 +73,7 @@ Game.prototype.setMode = function(mode) {
 function CombatMode() { }
 
 CombatMode.prototype.clicked = function(clicked) {
-    if (clicked instanceof HeroController) this.game.setMode(new HeroSelectedMode(clicked))
+    if (clicked.controller instanceof HeroController) this.game.setMode(new HeroSelectedMode(clicked))
     if (clicked instanceof InventorySlot) {
         if (clicked.reservedFor) return
         if (!clicked.item) return
@@ -85,18 +85,18 @@ CombatMode.prototype.entered = function() {}
 CombatMode.prototype.showInventory = true
 CombatMode.prototype.left = function() {}
 
-function HeroSelectedMode(heroController) { 
-    this.heroController = heroController
-    this.sprite = new SprigganSprite(this.heroController.actor.group, BattleContent, "battle/markers")
+function HeroSelectedMode(actor) { 
+    this.actor = actor
+    this.sprite = new SprigganSprite(this.actor.group, BattleContent, "battle/markers")
     this.sprite.loop("selected")
 }
 
 HeroSelectedMode.prototype.entered = function() {}
 
 HeroSelectedMode.prototype.clicked = function(clicked) {
-    if (clicked == this.heroController) {
+    if (clicked == this.actor) {
         this.game.setMode(new CombatMode())
-    } else if (clicked instanceof HeroController) {
+    } else if (clicked.controller instanceof HeroController) {
         this.game.setMode(new HeroSelectedMode(clicked))
     } else {
         var room
@@ -104,7 +104,8 @@ HeroSelectedMode.prototype.clicked = function(clicked) {
         if (clicked instanceof EnemyController) room = clicked.actor.room
         if (clicked instanceof ItemPickup) room = clicked.room
         if (!room) return
-        this.heroController.actor.setDestination(room)
+        this.actor.controller.destination = room
+        this.actor.think()
         this.game.setMode(new CombatMode())
     }
 }

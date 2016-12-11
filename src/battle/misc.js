@@ -15,3 +15,7 @@ function DirectionBetween(fromX, fromY, toX, toY) {
             return "up"
     }
 }
+
+function MakeSubclass(base, sub) {
+    sub.prototype = Object.create(base.prototype)
+}

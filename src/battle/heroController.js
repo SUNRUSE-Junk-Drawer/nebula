@@ -1,23 +1,12 @@
-function HeroController(room, weapon) {
-    var heroController = this
-    heroController.game = room.game
-    
-    heroController.actor = new HumanActor(heroController.game.partyFaction, room, "brownTrousers", "leatherJacket", weapon, "orangeHair", Clicked)
-    
-    function Clicked() {
-        heroController.game.mode.clicked(heroController)
-    }
-    
-    // partyMember.character.contentLoaded.listen(function() {
-        // partyMember.selectedSprite = new SprigganSprite(partyMember.character.group, partyMember.game.contentManager, "battle", Clicked)
-        // partyMember.selectedSprite.loop("selected")
-        // partyMember.selectedSprite.hide()
-    // })
-    
-    // partyMember.game.selectedPartyMemberChanged.listen(function(selected){        
-        // if (partyMember == selected)
-            // partyMember.selectedSprite.show()
-        // else
-            // partyMember.selectedSprite.hide()
-    // })
+function HeroController() {}
+
+MakeSubclass(ControllerBase, HeroController)
+
+HeroController.prototype.setup = function() {}
+
+HeroController.prototype.getDirectionToMove = function() {
+    var controller = this
+    return controller.actor.room.navigateTo(function(room) {
+        return room == controller.destination
+    })
 }
