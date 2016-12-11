@@ -326,18 +326,26 @@ function Decoration(room, position, sprite) {
     })
 }
 
-function ExteriorDoor(room, position, sprite) {
+function ExteriorDoor(room, position, sprite, roomPath) {
     var exteriorDoor = this
     exteriorDoor.room = room
     exteriorDoor.game = room.game
+    exteriorDoor.roomPath = roomPath
     var spritePrefix = (sprite || "exteriorDoor") + Capitalize(position)
     exteriorDoor.game.contentLoaded.listen(function() {
-        exteriorDoor.sprite = new SprigganSprite(exteriorDoor.game.backgroundOverlayGroup, exteriorDoor.game.contentManager, exteriorDoor.game.tilesetSpriteSheet)
+        exteriorDoor.markerX = room.x * exteriorDoor.game.tileset.gridSpacing + DirectionOffsetX(position, 40)
+        exteriorDoor.markerY = room.y * exteriorDoor.game.tileset.gridSpacing + DirectionOffsetY(position, 40)
+        
+        exteriorDoor.sprite = new SprigganSprite(exteriorDoor.game.backgroundOverlayGroup, exteriorDoor.game.contentManager, exteriorDoor.game.tilesetSpriteSheet, Clicked)
         exteriorDoor.sprite.move(room.x * room.game.tileset.gridSpacing, room.y * room.game.tileset.gridSpacing)
         exteriorDoor.sprite.loop(spritePrefix + "Closed")
-        exteriorDoor.foregroundSprite = new SprigganSprite(exteriorDoor.game.foregroundGroup, exteriorDoor.game.contentManager, exteriorDoor.game.tilesetSpriteSheet)
+        exteriorDoor.foregroundSprite = new SprigganSprite(exteriorDoor.game.foregroundGroup, exteriorDoor.game.contentManager, exteriorDoor.game.tilesetSpriteSheet, Clicked)
         exteriorDoor.foregroundSprite.move(room.x * room.game.tileset.gridSpacing, room.y * room.game.tileset.gridSpacing)
         exteriorDoor.foregroundSprite.loop(spritePrefix + "Foreground")
+        
+        function Clicked() {
+            exteriorDoor.game.mode.clicked(exteriorDoor)
+        }
     })
 }
 

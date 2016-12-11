@@ -79,11 +79,59 @@ CombatMode.prototype.clicked = function(clicked) {
         if (!clicked.item) return
         if (clicked.item["throw"]) this.game.setMode(new ThrowingItemMode(clicked))
     }
+    if (clicked instanceof ExteriorDoor) {
+        this.game.setMode(new ExitingMode(clicked))
+    }
 }
 
 CombatMode.prototype.entered = function() {}
 CombatMode.prototype.showInventory = true
 CombatMode.prototype.left = function() {}
+
+function ExitingMode(exteriorDoor) {
+    this.exteriorDoor = exteriorDoor
+}
+
+ExitingMode.prototype.entered = function() {
+    var mode = this
+    mode.sprite = new SprigganSprite(mode.game.markersGroup, BattleContent, "battle/markers", function() {
+        mode.clicked(mode.exteriorDoor)
+    })
+    mode.sprite.move(mode.exteriorDoor.markerX, mode.exteriorDoor.markerY)
+    mode.sprite.loop("exiting")
+    mode.game.partyFaction.think()
+    
+    // todo: what if a party member dies on the way to the exit?
+    
+    mode.arrivedCallback = function() {
+        // Ensure that all live part members are in the room before the door opens.
+        for (var i = 0; i < mode.game.partyFaction.actors.length; i++) {
+            var actor = mode.game.partyFaction.actors[i]
+            if (!actor.health) return
+            if (actor.room != mode.exteriorDoor.room) return
+        }
+        mode.game.viewport.dispose()
+        mode.game.savegame.roomPath = mode.exteriorDoor.roomPath
+        new Game(mode.game.savegame)
+    }
+    
+    mode.exteriorDoor.room.arrived.listen(mode.arrivedCallback)
+    
+    mode.arrivedCallback()
+}
+
+ExitingMode.prototype.showInventory = false
+
+ExitingMode.prototype.clicked = function(clicked) {
+    if ((clicked instanceof ExteriorDoor) && clicked != this.exteriorDoor) 
+        this.game.setMode(new ExitingMode(clicked))
+    else this.game.setMode(new CombatMode())
+}
+
+ExitingMode.prototype.left = function() {
+    this.exteriorDoor.room.arrived.unlisten(this.arrivedCallback)
+    this.sprite.dispose()
+}
 
 function HeroSelectedMode(actor) { 
     this.actor = actor

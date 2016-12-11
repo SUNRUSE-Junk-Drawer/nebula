@@ -16,6 +16,32 @@ function DirectionBetween(fromX, fromY, toX, toY) {
     }
 }
 
+function DirectionOffsetX(direction, amount) {
+    switch (direction) {
+        case "left": return -amount
+        case "right": return amount
+        default: return 0
+    }
+}
+
+function DirectionOffsetY(direction, amount) {
+    switch (direction) {
+        case "up": return -amount
+        case "down": return amount
+        default: return 0
+    }
+}
+
+function ReverseDirection(direction) {
+    switch (direction) {
+        case "up": return "down"
+        case "down": return "up"
+        case "left": return "right"
+        case "right": return "up"
+        case null: return null
+    }
+}
+
 function MakeSubclass(base, sub) {
     sub.prototype = Object.create(base.prototype)
 }
