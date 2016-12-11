@@ -6,7 +6,8 @@ function Game(savegame) {
     game.interactionModeChanged = new SprigganEventRecurring()
     game.contentLoaded = new SprigganEventOnce()
     
-    game.characters = []
+    // TODO: is this used?
+    game.actors = []
     
     game.factions = []
     game.partyFaction = new Faction(game)
@@ -38,7 +39,7 @@ function Game(savegame) {
         game.backgroundOverlayGroup = new SprigganGroup(game.group)
         game.itemPickupsGroup = new SprigganGroup(game.group)
         game.markersGroup = new SprigganGroup(game.group)
-        game.charactersGroup = new SprigganGroup(game.group)
+        game.actorsGroup = new SprigganGroup(game.group)
         game.effectsGroup = new SprigganGroup(game.group)
         game.foregroundGroup = new SprigganGroup(game.group)
 
@@ -86,7 +87,7 @@ CombatMode.prototype.left = function() {}
 
 function HeroSelectedMode(heroController) { 
     this.heroController = heroController
-    this.sprite = new SprigganSprite(this.heroController.character.group, BattleContent, "battle/markers")
+    this.sprite = new SprigganSprite(this.heroController.actor.group, BattleContent, "battle/markers")
     this.sprite.loop("selected")
 }
 
@@ -100,10 +101,10 @@ HeroSelectedMode.prototype.clicked = function(clicked) {
     } else {
         var room
         if (clicked instanceof Room) room = clicked
-        if (clicked instanceof EnemyController) room = clicked.character.room
+        if (clicked instanceof EnemyController) room = clicked.actor.room
         if (clicked instanceof ItemPickup) room = clicked.room
         if (!room) return
-        this.heroController.character.setDestination(room)
+        this.heroController.actor.setDestination(room)
         this.game.setMode(new CombatMode())
     }
 }
@@ -126,23 +127,23 @@ ThrowingItemMode.prototype.clicked = function(clicked) {
     
     var room
     if (clicked instanceof Room) room = clicked
-    if (clicked instanceof EnemyController) room = clicked.character.room
-    if (clicked instanceof HeroController) room = clicked.character.room
+    if (clicked instanceof EnemyController) room = clicked.actor.room
+    if (clicked instanceof HeroController) room = clicked.actor.room
     if (clicked instanceof ItemPickup) room = clicked.room
     if (!room) return
     mode.inventorySlot.reserveFor("throwing")
     new Order(mode.game.partyFaction, mode.game.markersGroup, "throwing", room.x * mode.game.tileset.gridSpacing, room.y * mode.game.tileset.gridSpacing, CanExecute, Execute, Cancel)
 
-    function CanExecute(character) {
-        return character.room.hasLineOfSightToRoom(room)
+    function CanExecute(actor) {
+        return actor.room.hasLineOfSightToRoom(room)
     }
     
-    function Execute(character, then) {
+    function Execute(actor, then) {
         mode.inventorySlot.replace(null)
         
         // TODO: this can currently be interrupted
-        character.torsoSpriteGroup.play("throw" + Capitalize(character.room.getDirectionToRoom(room) || "down"), function() {
-            mode.item["throw"](character, room)
+        actor.torsoSpriteGroup.play("throw" + Capitalize(actor.room.getDirectionToRoom(room) || "down"), function() {
+            mode.item["throw"](actor, room)
             then()
         })
     }

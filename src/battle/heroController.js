@@ -2,7 +2,7 @@ function HeroController(room, weapon) {
     var heroController = this
     heroController.game = room.game
     
-    heroController.character = new Character(heroController.game.partyFaction, room, "brownTrousers", "leatherJacket", weapon, "orangeHair", Clicked)
+    heroController.actor = new HumanActor(heroController.game.partyFaction, room, "brownTrousers", "leatherJacket", weapon, "orangeHair", Clicked)
     
     function Clicked() {
         heroController.game.mode.clicked(heroController)

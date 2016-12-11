@@ -1,4 +1,4 @@
-function ShouldAttackCharacter(attacker, target) {
+function ShouldAttackActor(attacker, target) {
     if (!target.health) return false
     if (!attacker.faction.shouldAttack(target.faction)) return false
     return true
@@ -11,38 +11,38 @@ var Items = {
             canAttack: function(fromRoom, toRoom, targetCrouching) {
                 return fromRoom == toRoom
             },
-            handle: function(character) {
+            handle: function(actor) {
                 function FindEnemy() {                    
                     // Prioritize people who aren't leaving.
-                    for (var i = 0; i < character.room.idleCharacters.length; i++)
-                        if (ShouldAttackCharacter(character, character.room.idleCharacters[i]))
-                            return character.room.idleCharacters[i]
+                    for (var i = 0; i < actor.room.idleActors.length; i++)
+                        if (ShouldAttackActor(actor, actor.room.idleActors[i]))
+                            return actor.room.idleActors[i]
                     
-                    for (var i = 0; i < character.room.characters.length; i++) 
-                        if (ShouldAttackCharacter(character, character.room.characters[i]))
-                            return character.room.characters[i]
+                    for (var i = 0; i < actor.room.actors.length; i++) 
+                        if (ShouldAttackActor(actor, actor.room.actors[i]))
+                            return actor.room.actors[i]
                         
                     return null
                 }
                 
-                if (!character.acting) {
+                if (!actor.acting) {
                     var enemy = FindEnemy()
                     if (enemy) {
-                        character.acting = true
-                        character.facing = DirectionBetween(character.group.x(), character.group.y(), enemy.group.x(), enemy.group.y())
-                        character.torsoSpriteGroup.play("drawSword" + Capitalize(character.facing), function() {
+                        actor.acting = true
+                        actor.facing = DirectionBetween(actor.group.x(), actor.group.y(), enemy.group.x(), enemy.group.y())
+                        actor.torsoSpriteGroup.play("drawSword" + Capitalize(actor.facing), function() {
                             var swiped = false
                             function Swipe() {
                                 var enemy = FindEnemy()
                                 if (!enemy) {
-                                    character.torsoSpriteGroup.play("stowSword" + Capitalize(character.facing), function() {
-                                        character.acting = false
-                                        character.think()
+                                    actor.torsoSpriteGroup.play("stowSword" + Capitalize(actor.facing), function() {
+                                        actor.acting = false
+                                        actor.think()
                                     })
                                 } else {
                                     enemy.hurt(3)
-                                    character.facing = DirectionBetween(character.group.x(), character.group.y(), enemy.group.x(), enemy.group.y())
-                                    character.torsoSpriteGroup.play("swipeSword" + (swiped ? "B" : "A") + Capitalize(character.facing), Swipe)
+                                    actor.facing = DirectionBetween(actor.group.x(), actor.group.y(), enemy.group.x(), enemy.group.y())
+                                    actor.torsoSpriteGroup.play("swipeSword" + (swiped ? "B" : "A") + Capitalize(actor.facing), Swipe)
                                     swiped = !swiped
                                 }
                             }
@@ -60,44 +60,44 @@ var Items = {
             canAttack: function(fromRoom, toRoom, targetCrouching) {
                 return fromRoom.hasLineOfSightToRoom(toRoom, targetCrouching)
             },
-            handle: function(character) {
+            handle: function(actor) {
                 function FindEnemy() {
                     var enemies = []
-                    character.room.emitLineOfSight(1000, true, function(room) {
-                        for (var i = 0; i < room.characters.length; i++) 
-                            if (ShouldAttackCharacter(character, room.characters[i]))
-                                enemies.push(room.characters[i])
+                    actor.room.emitLineOfSight(1000, true, function(room) {
+                        for (var i = 0; i < room.actors.length; i++) 
+                            if (ShouldAttackActor(actor, room.actors[i]))
+                                enemies.push(room.actors[i])
                     })
                     
                     // TODO: Pick closest/best?
                     return enemies[0]
                 }
                 
-                if (!character.acting) {
+                if (!actor.acting) {
                     var enemy = FindEnemy()
                     if (enemy) {
-                        character.acting = true
-                        character.facing = DirectionBetween(character.group.x(), character.group.y(), enemy.group.x(), enemy.group.y())
+                        actor.acting = true
+                        actor.facing = DirectionBetween(actor.group.x(), actor.group.y(), enemy.group.x(), enemy.group.y())
                         BattleContent.sounds.pistolDraw.play()
-                        character.torsoSpriteGroup.play("drawPistol" + Capitalize(character.facing), function() {
+                        actor.torsoSpriteGroup.play("drawPistol" + Capitalize(actor.facing), function() {
                             function Fire() {
                                 var enemy = FindEnemy()
                                 if (!enemy) {
                                     BattleContent.sounds.pistolStow.play()
-                                    character.torsoSpriteGroup.play("stowPistol" + Capitalize(character.facing), function() {
-                                        character.acting = false
-                                        character.think()
+                                    actor.torsoSpriteGroup.play("stowPistol" + Capitalize(actor.facing), function() {
+                                        actor.acting = false
+                                        actor.think()
                                     })
                                 } else {
-                                    character.facing = DirectionBetween(character.group.x(), character.group.y(), enemy.group.x(), enemy.group.y())
-                                    character.torsoSpriteGroup.play("firePistol" + Capitalize(character.facing), Fire)
+                                    actor.facing = DirectionBetween(actor.group.x(), actor.group.y(), enemy.group.x(), enemy.group.y())
+                                    actor.torsoSpriteGroup.play("firePistol" + Capitalize(actor.facing), Fire)
                                     BattleContent.sounds.pistolFire.play()
-                                    var tracer = new SprigganSprite(character.room.game.effectsGroup, BattleContent, "effects")
-                                    tracer.loop("pistolTracer" + Capitalize(character.facing))
+                                    var tracer = new SprigganSprite(actor.room.game.effectsGroup, BattleContent, "effects")
+                                    tracer.loop("pistolTracer" + Capitalize(actor.facing))
                                     
-                                    var x = character.group.x()
-                                    var y = character.group.y()
-                                    switch (character.facing) {
+                                    var x = actor.group.x()
+                                    var y = actor.group.y()
+                                    switch (actor.facing) {
                                         case "down": 
                                             y += 10
                                             break
@@ -115,7 +115,7 @@ var Items = {
                                     
                                     x = enemy.group.x()
                                     y = enemy.group.y()
-                                    switch (character.facing) {
+                                    switch (actor.facing) {
                                         case "down": 
                                             y -= 5
                                             break
@@ -131,7 +131,7 @@ var Items = {
                                     }
                                     tracer.moveAtPixelsPerSecond(x, y, 600, function() {
                                         enemy.hurt(1)
-                                        tracer.play("pistolImpact" + Capitalize(character.facing), function() {
+                                        tracer.play("pistolImpact" + Capitalize(actor.facing), function() {
                                             tracer.dispose()
                                         })
                                     })
@@ -146,9 +146,9 @@ var Items = {
         }
     },
     wrench: {
-        "throw": function(fromCharacter, toRoom) {
-            var sprite = new SprigganSprite(fromCharacter.room.game.effectsGroup, BattleContent, "battle/itemPickups")
-            sprite.move(fromCharacter.group.x(), fromCharacter.group.y())
+        "throw": function(fromActor, toRoom) {
+            var sprite = new SprigganSprite(fromActor.room.game.effectsGroup, BattleContent, "battle/itemPickups")
+            sprite.move(fromActor.group.x(), fromActor.group.y())
             sprite.loop("wrenchThrown")
             BattleContent.sounds.throwWrench.play()
             sprite.moveAtPixelsPerSecond(toRoom.x * toRoom.game.tileset.gridSpacing, toRoom.y * toRoom.game.tileset.gridSpacing, 250, function() {

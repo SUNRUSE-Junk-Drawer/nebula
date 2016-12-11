@@ -2,7 +2,7 @@ function Faction(game) {
     var faction = this
     faction.game = game
     faction.enemyFactions = []
-    faction.characters = []
+    faction.actors = []
     faction.orders = []
     
     faction.orderGiven = new SprigganEventRecurring()
@@ -15,8 +15,8 @@ Faction.prototype.shouldAttack = function(faction) {
 }
 
 Faction.prototype.think = function() {
-    for (var i = 0; i < this.characters.length; i++)
-        this.characters[i].think()
+    for (var i = 0; i < this.actors.length; i++)
+        this.actors[i].think()
 }
 
 function Animosity(factionA, factionB) {

@@ -1,4 +1,4 @@
-// Represents a place characters can stand.
+// Represents a place actors can stand.
 function Room(game, x, y, sprite) {
     var room = this
     room.game = game
@@ -8,8 +8,8 @@ function Room(game, x, y, sprite) {
     room.entered = new SprigganEventRecurring()
     room.exited = new SprigganEventRecurring()
     room.arrived = new SprigganEventRecurring()
-    room.characters = []
-    room.idleCharacters = []
+    room.actors = []
+    room.idleActors = []
     game.contentLoaded.listen(function(){
         room.sprite = new SprigganSprite(game.backgroundGroup, game.contentManager, game.tilesetSpriteSheet, function(){
             room.game.mode.clicked(room)
@@ -19,57 +19,57 @@ function Room(game, x, y, sprite) {
     })
 }
 
-Room.prototype.addIdleCharacter = function(character, facing) {
-    if (this.idleCharacters.indexOf(character) != -1) return
+Room.prototype.addIdleActor = function(actor, facing) {
+    if (this.idleActors.indexOf(actor) != -1) return
         
-    // Try and find the "best" place in the list given the characters run
+    // Try and find the "best" place in the list given the actors run
     // counter clockwise from south.
-    if (!this.idleCharacters.length) {
-        this.idleCharacters.push(character)
-    } else if (this.idleCharacters.length == 1) {     
+    if (!this.idleActors.length) {
+        this.idleActors.push(actor)
+    } else if (this.idleActors.length == 1) {     
         switch(facing) {
             case "up":                
                 // Start of array, south.
-                this.idleCharacters.unshift(character)   
+                this.idleActors.unshift(actor)   
                 break
                 
             case "down":               
                 // End of array, north.
-                this.idleCharacters.push(character)
+                this.idleActors.push(actor)
                 break
                 
             default:                
                 if (Math.random() >= 0.5)
-                    this.idleCharacters.push(character)
+                    this.idleActors.push(actor)
                 else
-                    this.idleCharacters.unshift(character)   
+                    this.idleActors.unshift(actor)   
                 break
         }
     } else {
         switch (facing) {
             case "left":
-                this.idleCharacters.splice(Math.ceil(this.idleCharacters.length / 4), 0, character)
+                this.idleActors.splice(Math.ceil(this.idleActors.length / 4), 0, actor)
                 break
             case "right":
-                this.idleCharacters.splice(Math.ceil(this.idleCharacters.length * 3 / 4), 0, character)
+                this.idleActors.splice(Math.ceil(this.idleActors.length * 3 / 4), 0, actor)
                 break
             case "up":
-                this.idleCharacters.unshift(character) 
+                this.idleActors.unshift(actor) 
                 break
             case "down":
-                this.idleCharacters.splice(Math.ceil(this.idleCharacters.length / 2), 0, character)
+                this.idleActors.splice(Math.ceil(this.idleActors.length / 2), 0, actor)
                 break
         }
     }
     
-    for (var i = 0; i < this.idleCharacters.length; i++) this.idleCharacters[i].think()
+    for (var i = 0; i < this.idleActors.length; i++) this.idleActors[i].think()
 }
 
-Room.prototype.removeIdleCharacter = function(character) {
-    if (this.idleCharacters.indexOf(character) == -1) return
+Room.prototype.removeIdleActor = function(actor) {
+    if (this.idleActors.indexOf(actor) == -1) return
     
-    SprigganRemoveByValue(this.idleCharacters, character)
-    for (var i = 0; i < this.idleCharacters.length; i++) this.idleCharacters[i].think()
+    SprigganRemoveByValue(this.idleActors, actor)
+    for (var i = 0; i < this.idleActors.length; i++) this.idleActors[i].think()
 }
 
 // Given a destination room, returns the direction in which to go to reach it.
@@ -184,8 +184,8 @@ function MakeLink(type) {
         return room == this.fromRoom ? this.toRoom : this.fromRoom
     }
     
-    type.prototype.enteredBy = function(character) {}
-    type.prototype.leftBy = function(character) {}
+    type.prototype.enteredBy = function(actor) {}
+    type.prototype.leftBy = function(actor) {}
     
     type.prototype.blocksLineOfSight = function(fromRoom) {
         return false
@@ -247,7 +247,7 @@ function InteriorDoor(fromRoom, toRoom, sprite) {
 
 MakeLink(InteriorDoor)
 
-InteriorDoor.prototype.enteredBy = function(character) {
+InteriorDoor.prototype.enteredBy = function(actor) {
     var interiorDoor = this
     if (!interiorDoor.users) {
         BattleContent.sounds.openDoor.play()
@@ -258,7 +258,7 @@ InteriorDoor.prototype.enteredBy = function(character) {
     interiorDoor.users++
 }
 
-InteriorDoor.prototype.leftBy = function(character) {
+InteriorDoor.prototype.leftBy = function(actor) {
     var interiorDoor = this
     interiorDoor.users--
     if (!interiorDoor.users) {
@@ -346,6 +346,6 @@ function EnemySpawnPoint(room) {
     enemySpawnPoint.room = room
     enemySpawnPoint.game = room.game
     enemySpawnPoint.game.contentLoaded.listen(function() {
-        new Enemy(room)
+        new EnemyController(room)
     })
 }
