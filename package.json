@@ -26,6 +26,6 @@
     "grunt-contrib-htmlmin": "^2.0.0",
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-contrib-watch": "^1.0.0",
-    "sprigganjs": "0.0.19"
+    "sprigganjs": "0.0.20"
   }
 }
