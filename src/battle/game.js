@@ -66,6 +66,7 @@ Game.prototype.setMode = function(mode) {
     else
         this.inventory.viewport.hide()
     mode.game = this
+    this.mode.entered()
 }
 
 function CombatMode() { }
@@ -79,8 +80,8 @@ CombatMode.prototype.clicked = function(clicked) {
     }
 }
 
+CombatMode.prototype.entered = function() {}
 CombatMode.prototype.showInventory = true
-
 CombatMode.prototype.left = function() {}
 
 function PartyMemberSelectedMode(partyMember) { 
@@ -88,6 +89,8 @@ function PartyMemberSelectedMode(partyMember) {
     this.sprite = new SprigganSprite(this.partyMember.character.group, BattleContent, "battle/markers")
     this.sprite.loop("selected")
 }
+
+PartyMemberSelectedMode.prototype.entered = function() {}
 
 PartyMemberSelectedMode.prototype.clicked = function(clicked) {
     if (clicked == this.partyMember) {
@@ -115,6 +118,8 @@ function ThrowingItemMode(inventorySlot) {
     this.inventorySlot = inventorySlot
     this.item = this.inventorySlot.item
 }
+
+ThrowingItemMode.prototype.entered = function() {}
 
 ThrowingItemMode.prototype.clicked = function(clicked) {
     var mode = this
