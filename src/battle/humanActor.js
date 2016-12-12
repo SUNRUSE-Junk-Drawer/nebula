@@ -142,6 +142,8 @@ HumanActor.prototype.think = function() {
             actor.group.moveAtPixelsPerSecond(x - xDiff, y - yDiff, 100, function() {
                 link.enteredBy(actor)
                 actor.group.moveAtPixelsPerSecond(x, y , 100, function() {
+                    SprigganRemoveByValue(actor.room.actors, actor)
+                    next.actors.push(actor)
                     actor.room = next
                     actor.room.arrived.raise(actor)
                     actor.group.moveAtPixelsPerSecond(x + xDiff, y + yDiff, 100, function() {
