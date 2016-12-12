@@ -152,6 +152,7 @@ var Items = {
             sprite.loop("wrenchThrown")
             BattleContent.sounds.throwWrench.play()
             sprite.moveAtPixelsPerSecond(toRoom.x * toRoom.game.tileset.gridSpacing, toRoom.y * toRoom.game.tileset.gridSpacing, 250, function() {
+                toRoom.emitSound(20)
                 BattleContent.sounds.hitWrench.play()
                 sprite.dispose()
                 new ItemPickup(toRoom, "wrench")
