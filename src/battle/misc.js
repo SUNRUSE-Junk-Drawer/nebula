@@ -45,3 +45,7 @@ function ReverseDirection(direction) {
 function MakeSubclass(base, sub) {
     sub.prototype = Object.create(base.prototype)
 }
+
+function RandomFromArray(array) {
+    return array[Math.floor(Math.random() * array.length)]
+}
