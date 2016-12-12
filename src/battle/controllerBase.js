@@ -7,3 +7,6 @@ ControllerBase.prototype.bindTo = function(actor) {
     actor.setup()
     this.setup()
 }
+
+ControllerBase.prototype.hearSound = function(room) {}
+ControllerBase.prototype.seeActor = function(actor) {}

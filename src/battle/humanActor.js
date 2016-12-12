@@ -202,3 +202,7 @@ HumanActor.prototype.stopSaying = function() {
         this.speechGroup = null
     }
 }
+
+HumanActor.prototype.hearSound = function(room) {
+    this.controller.hearSound(room)
+}
