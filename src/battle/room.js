@@ -179,6 +179,30 @@ Room.prototype.hasLineOfSightToRoom = function (toRoom, waistHigh) {
     return true
 }
 
+Room.prototype.floodfill = function(checkLink, roomCallback, distance) {
+    var found = []
+    function Recurse(room, travelled) {
+        if (travelled >= distance) return
+        if (found.indexOf(room) != -1) return
+        roomCallback(room)
+        found.push(room)
+        for (var key in room.links)
+            if (checkLink(room.links[key], room))
+                Recurse(room.links[key].roomOpposite(room), travelled + 1)
+    }
+    Recurse(this, 0)
+}
+
+Room.prototype.emitSound = function(distance) {
+    var origin = this
+    this.floodfill(function(link, fromRoom) {
+        return !link.blocksLineOfSight(fromRoom)
+    }, function(room) {
+        for (var i = 0; i < room.actors.length; i++)
+            room.actors[i].hearSound(origin)
+    }, distance)
+}
+
 function MakeLink(type) {
     type.prototype.roomOpposite = function(room) {
         return room == this.fromRoom ? this.toRoom : this.fromRoom
