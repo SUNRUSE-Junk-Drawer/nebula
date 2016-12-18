@@ -12,7 +12,7 @@ function LoadNavigation() {
     
     function AfterLoading() {
         var savegame = {
-            roomPath: "tutorial/throwing",
+            map: "tutorial/throwing",
             areaPath: "test",
             inventory: []
         }

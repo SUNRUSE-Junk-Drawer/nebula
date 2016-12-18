@@ -31,7 +31,7 @@ function LoadBattle() {
     function AfterLoading() {
         var savegame = {
             fromDoor: null,
-            roomPath: "tutorial/throwing",
+            map: "tutorial/throwing",
             areaPath: "test",
             inventory: [],
             party: [{

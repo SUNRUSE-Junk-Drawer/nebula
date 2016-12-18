@@ -55,8 +55,8 @@ module.exports = function(grunt) {
                 }, {
                     expand: true,
                     src: "**/*.js",
-                    dest: "dist/rooms",
-                    cwd: "src/rooms"            
+                    dest: "dist/battle/maps",
+                    cwd: "src/battle/maps"            
                 }, {
                     expand: true,
                     src: "**/*.js",

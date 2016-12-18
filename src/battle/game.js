@@ -17,12 +17,12 @@ function Game(savegame) {
     new Animosity(game.partyFaction, game.enemyFaction)
     
     var roomScriptContentManager = ShowLoadingScreen(LoadedRoomScript)
-    roomScriptContentManager.add(SprigganJavaScript, "rooms/" + savegame.roomPath + "/script.js")
+    roomScriptContentManager.add(SprigganJavaScript, "battle/maps/" + savegame.map + ".js")
     
     function LoadedRoomScript() {
         game.contentManager = ShowLoadingScreen(LoadedContent)
         
-        roomScriptContentManager.get(SprigganJavaScript, "rooms/" + savegame.roomPath + "/script.js")(game)
+        roomScriptContentManager.get(SprigganJavaScript, "battle/maps/" + savegame.map + ".js")(game)
         
         game.tileset = Tilesets[game.tilesetName]
         game.tilesetSpriteSheet = "battle/tilesets/" + game.tilesetName
@@ -162,8 +162,8 @@ ExitingMode.prototype.entered = function() {
             if (actor.room == mode.exteriorDoor.room) return
         }
         mode.game.viewport.dispose()
-        mode.game.savegame.fromDoor = mode.game.savegame.roomPath
-        mode.game.savegame.roomPath = mode.exteriorDoor.roomPath
+        mode.game.savegame.fromDoor = mode.game.savegame.map
+        mode.game.savegame.map = mode.exteriorDoor.map
         new Game(mode.game.savegame)
     })
     mode.game.partyFaction.think()

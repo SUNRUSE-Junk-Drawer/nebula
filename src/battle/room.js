@@ -363,13 +363,13 @@ function Decoration(room, position, sprite) {
     })
 }
 
-function ExteriorDoor(room, position, sprite, roomPath) {
+function ExteriorDoor(room, position, sprite, map) {
     var exteriorDoor = this
     exteriorDoor.room = room
     exteriorDoor.position = position
     exteriorDoor.game = room.game
-    exteriorDoor.roomPath = roomPath || null
-    exteriorDoor.game.exteriorDoors[exteriorDoor.roomPath] = exteriorDoor
+    exteriorDoor.map = map || null
+    exteriorDoor.game.exteriorDoors[exteriorDoor.map] = exteriorDoor
     exteriorDoor.spritePrefix = (sprite || "exteriorDoor") + Capitalize(position)
     exteriorDoor.game.contentLoaded.listen(function() {
         exteriorDoor.markerX = room.x * exteriorDoor.game.tileset.gridSpacing + DirectionOffsetX(position, 40)
@@ -378,7 +378,7 @@ function ExteriorDoor(room, position, sprite, roomPath) {
         exteriorDoor.sprite = new SprigganSprite(exteriorDoor.game.backgroundOverlayGroup, exteriorDoor.game.contentManager, exteriorDoor.game.tilesetSpriteSheet, Clicked)
         exteriorDoor.sprite.move(room.x * room.game.tileset.gridSpacing, room.y * room.game.tileset.gridSpacing)
         
-        if (exteriorDoor.roomPath == exteriorDoor.game.savegame.fromDoor) {
+        if (exteriorDoor.map == exteriorDoor.game.savegame.fromDoor) {
             BattleContent.sounds.closeDoor.play()
             exteriorDoor.sprite.play(exteriorDoor.spritePrefix + "Open", function() {
                 exteriorDoor.sprite.play(exteriorDoor.spritePrefix + "Closing", function() {
