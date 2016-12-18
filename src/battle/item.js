@@ -169,7 +169,8 @@ function ItemPickup(room, itemName) {
             room.game.mode.clicked(itemPickup)
         })
         room.entered.listen(PerformPickup)
-        function PerformPickup(){
+        function PerformPickup(character) {
+            if (!(character.controller instanceof HeroController)) return
             if (!room.game.inventory.tryToAcquire(itemName)) return
             itemPickup.sprite.dispose()
             BattleContent.sounds.pickUpWrench.play()
