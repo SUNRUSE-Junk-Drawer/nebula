@@ -357,7 +357,7 @@ function ExteriorDoor(room, position, sprite, roomPath) {
     exteriorDoor.game = room.game
     exteriorDoor.roomPath = roomPath || null
     exteriorDoor.game.exteriorDoors[exteriorDoor.roomPath] = exteriorDoor
-    var spritePrefix = (sprite || "exteriorDoor") + Capitalize(position)
+    exteriorDoor.spritePrefix = (sprite || "exteriorDoor") + Capitalize(position)
     exteriorDoor.game.contentLoaded.listen(function() {
         exteriorDoor.markerX = room.x * exteriorDoor.game.tileset.gridSpacing + DirectionOffsetX(position, 40)
         exteriorDoor.markerY = room.y * exteriorDoor.game.tileset.gridSpacing + DirectionOffsetY(position, 40)
@@ -369,21 +369,27 @@ function ExteriorDoor(room, position, sprite, roomPath) {
         
         if (exteriorDoor.roomPath == exteriorDoor.game.savegame.fromDoor) {
             BattleContent.sounds.closeDoor.play()
-            exteriorDoor.sprite.play(spritePrefix + "Open", function() {
-                exteriorDoor.sprite.play(spritePrefix + "Closing", function() {
-                    exteriorDoor.sprite.loop(spritePrefix + "Closed")
+            exteriorDoor.sprite.play(exteriorDoor.spritePrefix + "Open", function() {
+                exteriorDoor.sprite.play(exteriorDoor.spritePrefix + "Closing", function() {
+                    exteriorDoor.sprite.loop(exteriorDoor.spritePrefix + "Closed")
                 })
             })
-        } else exteriorDoor.sprite.loop(spritePrefix + "Closed")
+        } else exteriorDoor.sprite.loop(exteriorDoor.spritePrefix + "Closed")
         
         exteriorDoor.foregroundSprite = new SprigganSprite(exteriorDoor.game.foregroundGroup, exteriorDoor.game.contentManager, exteriorDoor.game.tilesetSpriteSheet, Clicked)
         exteriorDoor.foregroundSprite.move(room.x * room.game.tileset.gridSpacing, room.y * room.game.tileset.gridSpacing)
-        exteriorDoor.foregroundSprite.loop(spritePrefix + "Foreground")
+        exteriorDoor.foregroundSprite.loop(exteriorDoor.spritePrefix + "Foreground")
         
         function Clicked() {
             exteriorDoor.game.mode.clicked(exteriorDoor)
         }
     })
+}
+
+ExteriorDoor.prototype.open = function(callback) {
+	var exteriorDoor = this
+	BattleContent.sounds.openDoor.play()
+	exteriorDoor.sprite.play(exteriorDoor.spritePrefix + "Opening", callback)
 }
 
 function EnemySpawnPoint(room) {
