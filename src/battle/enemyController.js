@@ -8,6 +8,16 @@ EnemyController.prototype.setup = function() {}
 
 EnemyController.prototype.getDirectionToMove = function() {
     var controller = this
+    
+    for (var i = 0; i < controller.game.factions.length; i++) {
+        var faction = controller.game.factions[i]
+        if (!controller.actor.faction.shouldAttack(faction)) continue
+        for (var j = 0; j < faction.actors.length; j++) {
+            var enemy = faction.actors[j]
+            if (controller.actor.canAttack(enemy.room)) return null
+        }
+    }
+    
     if (controller.roomsToInvestigate.length) {
         SprigganRemoveByValue(controller.roomsToInvestigate, controller.actor.room)
         return controller.actor.room.navigateTo(function(room) {

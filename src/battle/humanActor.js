@@ -200,3 +200,7 @@ HumanActor.prototype.hearSound = function(room) {
 HumanActor.prototype.seeMotion = function(actor, fromRoom, toRoom) {
     this.controller.seeMotion(actor, fromRoom, toRoom)
 }
+
+HumanActor.prototype.canAttack = function(room) {
+    return Items[this.configuration.weapon].weapon.canAttack(this.room, room, false)
+}
