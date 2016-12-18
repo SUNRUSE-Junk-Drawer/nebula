@@ -119,25 +119,10 @@ HumanActor.prototype.think = function() {
             // - Walk 20 pixels in front of the boundary on the new side.
             // - Recurse to .think()
             
-            var xDiff = 0, yDiff = 0
-            
-            switch (actor.facing) {
-                case "up":
-                    yDiff = -actor.room.game.tileset.linkLength
-                    break
-                case "down":
-                    yDiff = actor.room.game.tileset.linkLength
-                    break
-                case "left":
-                    xDiff = -actor.room.game.tileset.linkLength
-                    break
-                case "right":
-                    xDiff = actor.room.game.tileset.linkLength
-                    break
-            }
-            
-            var x = (next.x + actor.room.x) * actor.room.game.tileset.gridSpacing / 2
-            var y = (next.y + actor.room.y) * actor.room.game.tileset.gridSpacing / 2
+            var x = actor.room.x * actor.room.game.tileset.gridSpacing + DirectionOffsetX(actor.facing, actor.room.game.tileset.gridSpacing / 2)
+            var y = actor.room.y * actor.room.game.tileset.gridSpacing + DirectionOffsetY(actor.facing, actor.room.game.tileset.gridSpacing / 2)
+            var xDiff = DirectionOffsetX(actor.facing, actor.room.game.tileset.linkLength)
+            var yDiff = DirectionOffsetY(actor.facing, actor.room.game.tileset.linkLength)
             
             actor.group.moveAtPixelsPerSecond(x - xDiff, y - yDiff, 100, function() {
                 link.enteredBy(actor)
