@@ -33,7 +33,18 @@ function LoadBattle() {
             fromDoor: null,
             roomPath: "tutorial/throwing",
             areaPath: "test",
-            inventory: []
+            inventory: [],
+            party: [{
+                legs: "brownTrousers", 
+                torso: "leatherJacket", 
+                weapon: "sword", 
+                hair: "orangeHair"
+            }, {
+                legs: "brownTrousers", 
+                torso: "leatherJacket", 
+                weapon: "pistol", 
+                hair: "orangeHair"
+            }]
         }
         while (savegame.inventory.length < 12) savegame.inventory.push(null)
         new Battle.Game(savegame)

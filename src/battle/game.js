@@ -46,12 +46,12 @@ function Game(savegame) {
         game.contentLoaded.raise()
         
         var door = game.exteriorDoors[game.savegame.fromDoor]
-        new HeroController().bindTo(new HumanActor(game.partyFaction, door.room, {
-            legs: "brownTrousers", 
-            torso: "leatherJacket", 
-            weapon: "pistol", 
-            hair: "orangeHair"
-        }, door.room.x * game.tileset.gridSpacing + DirectionOffsetX(door.position, game.tileset.gridSpacing / 2), door.room.y * game.tileset.gridSpacing + DirectionOffsetY(door.position, game.tileset.gridSpacing / 2), ReverseDirection(door.position)))
+        var initialX = door.room.x * game.tileset.gridSpacing + DirectionOffsetX(door.position, game.tileset.gridSpacing / 2)
+        var initialY = door.room.y * game.tileset.gridSpacing + DirectionOffsetY(door.position, game.tileset.gridSpacing / 2)
+        var initialFacing = ReverseDirection(door.position)
+        for (var i = 0; i < game.savegame.party.length; i++) {
+            new HeroController().bindTo(new HumanActor(game.partyFaction, door.room, game.savegame.party[i], initialX, initialY, initialFacing))
+        }
         
         game.inventory = new Inventory(game)
         game.playPause = new PlayPause(game)
