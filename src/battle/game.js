@@ -184,6 +184,8 @@ HeroSelectedMode.prototype.clicked = function(clicked) {
         this.game.setMode(new CombatMode())
     } else if (clicked.controller instanceof HeroController) {
         this.game.setMode(new HeroSelectedMode(clicked))
+    } else if (clicked instanceof ExteriorDoor) {
+        this.game.setMode(new FindingExitMode(clicked))
     } else {
         var room
         if (clicked instanceof Room) room = clicked
