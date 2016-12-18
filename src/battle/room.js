@@ -395,6 +395,11 @@ function EnemySpawnPoint(room) {
     enemySpawnPoint.room = room
     enemySpawnPoint.game = room.game
     enemySpawnPoint.game.contentLoaded.listen(function() {
-        new EnemyController().bindTo(new HumanActor(enemySpawnPoint.game.enemyFaction, enemySpawnPoint.room, "brownTrousers", "leatherJacket", "pistol", "orangeHair", enemySpawnPoint.room.x * enemySpawnPoint.game.tileset.gridSpacing, enemySpawnPoint.room.y * enemySpawnPoint.game.tileset.gridSpacing, "down"))
+        new EnemyController().bindTo(new HumanActor(enemySpawnPoint.game.enemyFaction, enemySpawnPoint.room, {
+            legs: "brownTrousers", 
+            torso: "leatherJacket", 
+            weapon: "pistol", 
+            hair: "orangeHair"
+        }, enemySpawnPoint.room.x * enemySpawnPoint.game.tileset.gridSpacing, enemySpawnPoint.room.y * enemySpawnPoint.game.tileset.gridSpacing, "down"))
     })
 }

@@ -1,12 +1,9 @@
-function HumanActor(faction, room, legName, torsoName, weaponName, headName, initialX, initialY, initialFacingDirection) {
+function HumanActor(faction, room, configuration, initialX, initialY, initialFacingDirection) {
     var actor = this
     actor.faction = faction
     actor.faction.actors.push(actor)
     actor.room = room
-    actor.legName = legName
-    actor.torsoName = torsoName
-    actor.weaponName = weaponName
-    actor.headName = headName
+    actor.configuration = configuration
     actor.layers = []
     actor.destination = room
     actor.facing = initialFacingDirection
@@ -38,9 +35,9 @@ HumanActor.prototype.setup = function() {
             actor.healthSprites.push(healthSprite)
         }
         
-        actor.legSpriteGroup = new SpriteGroup(actor.group, BattleContent, "character", [actor.legName])
+        actor.legSpriteGroup = new SpriteGroup(actor.group, BattleContent, "character", [actor.configuration.legs])
         actor.legSpriteGroup.loop("idleDown")
-        actor.torsoSpriteGroup = new SpriteGroup(actor.group, BattleContent, "character", [actor.torsoName, actor.weaponName, actor.headName])
+        actor.torsoSpriteGroup = new SpriteGroup(actor.group, BattleContent, "character", [actor.configuration.torso, actor.configuration.weapon, actor.configuration.hair])
         actor.torsoSpriteGroup.loop("idleDown")
         
         actor.group.move(actor.initialX, actor.initialY)
@@ -172,7 +169,7 @@ HumanActor.prototype.think = function() {
         }
     }
     
-    Items[actor.weaponName].weapon.handle(actor)
+    Items[actor.configuration.weapon].weapon.handle(actor)
     
     if (!actor.acting) {
         if (actor.moving)
