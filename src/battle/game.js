@@ -56,7 +56,10 @@ function Game(savegame) {
         game.inventory = new Inventory(game)
         game.playPause = new PlayPause(game)
         
-        game.setMode(new CombatMode())
+        if (game.enemyFaction.actors.length)
+            game.setMode(new CombatMode())
+        else
+            game.setMode(new ExploringMode())
     }
 }
 
@@ -88,7 +91,7 @@ CombatMode.prototype.clicked = function(clicked) {
         if (clicked.item["throw"]) this.game.setMode(new ThrowingItemMode(clicked))
     }
     if (clicked instanceof ExteriorDoor) {
-        this.game.setMode(new FindingExitMode(clicked))
+        this.game.setMode(new FindingExitMode(clicked, CombatMode))
     }
 }
 
@@ -96,8 +99,9 @@ CombatMode.prototype.entered = function() {}
 CombatMode.prototype.showInventory = true
 CombatMode.prototype.left = function() {}
 
-function FindingExitMode(exteriorDoor) {
+function FindingExitMode(exteriorDoor, modeWhenCancelled) {
     this.exteriorDoor = exteriorDoor
+    this.modeWhenCancelled = modeWhenCancelled
 }
 
 FindingExitMode.prototype.entered = function() {
@@ -131,8 +135,11 @@ FindingExitMode.prototype.showInventory = false
 
 FindingExitMode.prototype.clicked = function(clicked) {
     if ((clicked instanceof ExteriorDoor) && clicked != this.exteriorDoor) 
-        this.game.setMode(new FindingExitMode(clicked))
-    else this.game.setMode(new CombatMode())
+        this.game.setMode(new FindingExitMode(clicked, this.modeWhenCancelled))
+    else {
+        this.game.setMode(new this.modeWhenCancelled())
+        this.game.mode.clicked(clicked)
+    }
 }
 
 FindingExitMode.prototype.left = function() {
@@ -250,3 +257,27 @@ ThrowingItemMode.prototype.clicked = function(clicked) {
 }
 
 ThrowingItemMode.prototype.left = function() {}
+
+function ExploringMode() {}
+
+ExploringMode.prototype.entered = function() {}
+
+ExploringMode.prototype.clicked = function(clicked) {   
+    if (clicked instanceof ExteriorDoor) {
+        this.game.setMode(new FindingExitMode(clicked, ExploringMode))
+        return
+    }
+
+    var room = null
+    if (clicked instanceof Room) room = clicked
+    room = room || clicked.room
+    
+    if (!room) return
+    
+    for (var i = 0; i < this.game.partyFaction.actors.length; i++) {
+        this.game.partyFaction.actors[i].controller.destination = room
+        this.game.partyFaction.actors[i].think()
+    }
+}
+
+ExploringMode.prototype.left = function() {}
