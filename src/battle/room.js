@@ -361,8 +361,6 @@ function ExteriorDoor(room, position, sprite, roomPath) {
     exteriorDoor.game.contentLoaded.listen(function() {
         exteriorDoor.markerX = room.x * exteriorDoor.game.tileset.gridSpacing + DirectionOffsetX(position, 40)
         exteriorDoor.markerY = room.y * exteriorDoor.game.tileset.gridSpacing + DirectionOffsetY(position, 40)
-        exteriorDoor.walkX = room.x * exteriorDoor.game.tileset.gridSpacing + DirectionOffsetX(position, 30)
-        exteriorDoor.walkY = room.y * exteriorDoor.game.tileset.gridSpacing + DirectionOffsetY(position, 30)
         
         exteriorDoor.sprite = new SprigganSprite(exteriorDoor.game.backgroundOverlayGroup, exteriorDoor.game.contentManager, exteriorDoor.game.tilesetSpriteSheet, Clicked)
         exteriorDoor.sprite.move(room.x * room.game.tileset.gridSpacing, room.y * room.game.tileset.gridSpacing)
