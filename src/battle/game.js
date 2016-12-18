@@ -106,7 +106,7 @@ ExitingMode.prototype.entered = function() {
     
     // todo: what if a party member dies on the way to the exit?
     
-    mode.arrivedCallback = function() {
+    mode.enteredCallback = function() {
         // Ensure that all live part members are in the room before the door opens.
         for (var i = 0; i < mode.game.partyFaction.actors.length; i++) {
             var actor = mode.game.partyFaction.actors[i]
@@ -119,9 +119,9 @@ ExitingMode.prototype.entered = function() {
         new Game(mode.game.savegame)
     }
     
-    mode.exteriorDoor.room.arrived.listen(mode.arrivedCallback)
+    mode.exteriorDoor.room.entered.listen(mode.enteredCallback)
     
-    mode.arrivedCallback()
+    mode.enteredCallback()
 }
 
 ExitingMode.prototype.showInventory = false
@@ -133,7 +133,7 @@ ExitingMode.prototype.clicked = function(clicked) {
 }
 
 ExitingMode.prototype.left = function() {
-    this.exteriorDoor.room.arrived.unlisten(this.arrivedCallback)
+    this.exteriorDoor.room.entered.unlisten(this.enteredCallback)
     this.sprite.dispose()
 }
 

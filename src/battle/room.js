@@ -6,8 +6,8 @@ function Room(game, x, y, sprite) {
     room.y = y
     room.links = {}
     room.entered = new SprigganEventRecurring()
-    room.exited = new SprigganEventRecurring()
-    room.arrived = new SprigganEventRecurring()
+    room.left = new SprigganEventRecurring()
+    room.entered = new SprigganEventRecurring()
     room.actors = []
     room.idleActors = []
     game.contentLoaded.listen(function(){

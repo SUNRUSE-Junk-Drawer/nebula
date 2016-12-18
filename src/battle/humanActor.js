@@ -50,7 +50,7 @@ HumanActor.prototype.setup = function() {
         
         actor.room.addIdleActor(actor, "up")
         
-        actor.room.arrived.raise(actor)
+        actor.room.entered.raise(actor)
     })
 }
 
@@ -144,8 +144,10 @@ HumanActor.prototype.think = function() {
                 actor.group.moveAtPixelsPerSecond(x, y , 100, function() {
                     SprigganRemoveByValue(actor.room.actors, actor)
                     next.actors.push(actor)
+                    var previous = actor.room
                     actor.room = next
-                    actor.room.arrived.raise(actor)
+                    previous.left.raise(actor)
+                    next.entered.raise(actor)
                     actor.group.moveAtPixelsPerSecond(x + xDiff, y + yDiff, 100, function() {
                         link.leftBy(actor)
                         actor.moving = false

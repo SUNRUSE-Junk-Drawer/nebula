@@ -168,12 +168,12 @@ function ItemPickup(room, itemName) {
         itemPickup.sprite = new SprigganSprite(room.game.itemPickupsGroup, BattleContent, "battle/itemPickups", function(){
             room.game.mode.clicked(itemPickup)
         })
-        room.arrived.listen(PerformPickup)
+        room.entered.listen(PerformPickup)
         function PerformPickup(){
             if (!room.game.inventory.tryToAcquire(itemName)) return
             itemPickup.sprite.dispose()
             BattleContent.sounds.pickUpWrench.play()
-            room.arrived.unlisten(PerformPickup)
+            room.entered.unlisten(PerformPickup)
         }
         itemPickup.sprite.loop("wrench")
         itemPickup.sprite.move(room.x * room.game.tileset.gridSpacing, room.y * room.game.tileset.gridSpacing)
