@@ -95,7 +95,8 @@ HumanActor.prototype.think = function() {
             actor.room.removeIdleActor(actor)
             actor.facing = newDirection
             var link = actor.room.links[newDirection]
-            var next = link.roomOpposite(actor.room)
+            var next = null
+            if (link) next = link.roomOpposite(actor.room)
             actor.moving = true
             
             if (!actor.walking) {
@@ -125,19 +126,21 @@ HumanActor.prototype.think = function() {
             var yDiff = DirectionOffsetY(actor.facing, actor.room.game.tileset.linkLength)
             
             actor.group.moveAtPixelsPerSecond(x - xDiff, y - yDiff, 100, function() {
-                link.enteredBy(actor)
+                if (link) link.enteredBy(actor)
                 actor.group.moveAtPixelsPerSecond(x, y , 100, function() {
                     SprigganRemoveByValue(actor.room.actors, actor)
-                    next.actors.push(actor)
+                    if (next) next.actors.push(actor)
                     var previous = actor.room
                     actor.room = next
                     previous.left.raise(actor)
-                    next.entered.raise(actor)
-                    actor.group.moveAtPixelsPerSecond(x + xDiff, y + yDiff, 100, function() {
-                        link.leftBy(actor)
-                        actor.moving = false
-                        actor.room.addIdleActor(actor, newDirection)
-                    })
+                    if (next) next.entered.raise(actor)
+                    if (link) {
+                        actor.group.moveAtPixelsPerSecond(x + xDiff, y + yDiff, 100, function() {
+                            link.leftBy(actor)
+                            actor.moving = false
+                            actor.room.addIdleActor(actor, newDirection)
+                        })
+                    }
                 })
             })
         }
