@@ -35,9 +35,9 @@ HumanActor.prototype.setup = function() {
             actor.healthSprites.push(healthSprite)
         }
         
-        actor.legSpriteGroup = new SpriteGroup(actor.group, BattleContent, "character", [actor.configuration.legs])
+        actor.legSpriteGroup = new SpriteGroup(actor.group, BattleContent, "battle/character", [actor.configuration.legs])
         actor.legSpriteGroup.loop("idleDown")
-        actor.torsoSpriteGroup = new SpriteGroup(actor.group, BattleContent, "character", [actor.configuration.torso, actor.configuration.weapon, actor.configuration.hair])
+        actor.torsoSpriteGroup = new SpriteGroup(actor.group, BattleContent, "battle/character", [actor.configuration.torso, actor.configuration.weapon, actor.configuration.hair])
         actor.torsoSpriteGroup.loop("idleDown")
         
         actor.group.move(actor.initialX, actor.initialY)

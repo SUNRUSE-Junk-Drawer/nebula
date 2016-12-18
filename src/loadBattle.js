@@ -9,11 +9,11 @@ function LoadBattle() {
         })
         BattleContent.add(SprigganJavaScript, "battle.js")
         BattleContent.add(SprigganSpriteSheet, "battle/inventory")
-        BattleContent.add(SprigganSpriteSheet, "character")
-        BattleContent.add(SprigganSpriteSheet, "battle")
+        BattleContent.add(SprigganSpriteSheet, "battle/character")
+        BattleContent.add(SprigganSpriteSheet, "battle/battle")
         BattleContent.add(SprigganSpriteSheet, "battle/itemPickups")
         BattleContent.add(SprigganSpriteSheet, "battle/markers")
-        BattleContent.add(SprigganSpriteSheet, "effects")
+        BattleContent.add(SprigganSpriteSheet, "battle/effects")
         
         BattleContent.sounds = {
             footstep: new SoundSet(BattleContent, "battle/footstep", 4),

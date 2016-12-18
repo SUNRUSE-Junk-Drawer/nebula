@@ -92,7 +92,7 @@ var Items = {
                                     actor.facing = DirectionBetween(actor.group.x(), actor.group.y(), enemy.group.x(), enemy.group.y())
                                     actor.torsoSpriteGroup.play("firePistol" + Capitalize(actor.facing), Fire)
                                     BattleContent.sounds.pistolFire.play()
-                                    var tracer = new SprigganSprite(actor.room.game.effectsGroup, BattleContent, "effects")
+                                    var tracer = new SprigganSprite(actor.room.game.effectsGroup, BattleContent, "battle/effects")
                                     tracer.loop("pistolTracer" + Capitalize(actor.facing))
                                     
                                     var x = actor.group.x()
