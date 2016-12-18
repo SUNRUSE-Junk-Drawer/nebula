@@ -83,7 +83,7 @@ CombatMode.prototype.clicked = function(clicked) {
         if (clicked.item["throw"]) this.game.setMode(new ThrowingItemMode(clicked))
     }
     if (clicked instanceof ExteriorDoor) {
-        this.game.setMode(new ExitingMode(clicked))
+        this.game.setMode(new FindingExitMode(clicked))
     }
 }
 
@@ -91,11 +91,11 @@ CombatMode.prototype.entered = function() {}
 CombatMode.prototype.showInventory = true
 CombatMode.prototype.left = function() {}
 
-function ExitingMode(exteriorDoor) {
+function FindingExitMode(exteriorDoor) {
     this.exteriorDoor = exteriorDoor
 }
 
-ExitingMode.prototype.entered = function() {
+FindingExitMode.prototype.entered = function() {
     var mode = this
     mode.sprite = new SprigganSprite(mode.game.markersGroup, BattleContent, "battle/markers", function() {
         mode.clicked(mode.exteriorDoor)
@@ -113,15 +113,49 @@ ExitingMode.prototype.entered = function() {
             if (!actor.health) return
             if (actor.room != mode.exteriorDoor.room) return
         }
-        mode.game.viewport.dispose()
-        mode.game.savegame.fromDoor = mode.game.savegame.roomPath
-        mode.game.savegame.roomPath = mode.exteriorDoor.roomPath
-        new Game(mode.game.savegame)
+        mode.game.setMode(new ExitingMode(mode.exteriorDoor))
+
     }
     
     mode.exteriorDoor.room.entered.listen(mode.enteredCallback)
     
     mode.enteredCallback()
+}
+
+FindingExitMode.prototype.showInventory = false
+
+FindingExitMode.prototype.clicked = function(clicked) {
+    if ((clicked instanceof ExteriorDoor) && clicked != this.exteriorDoor) 
+        this.game.setMode(new FindingExitMode(clicked))
+    else this.game.setMode(new CombatMode())
+}
+
+FindingExitMode.prototype.left = function() {
+    this.exteriorDoor.room.entered.unlisten(this.enteredCallback)
+    this.sprite.dispose()
+}
+
+function ExitingMode(exteriorDoor) {
+    this.exteriorDoor = exteriorDoor
+}
+
+ExitingMode.prototype.entered = function() {
+    var mode = this
+    mode.exteriorDoor.room.left.listen(function(character) {
+        // Ensure that all live party rooms have left the room before switching map.
+        for (var i = 0; i < mode.exteriorDoor.room.actors.length; i++) {
+            var actor = mode.exteriorDoor.room.actors[i]
+            if (!actor.health) continue
+            if (actor.faction != mode.exteriorDoor.room.game.partyFaction) continue
+            if (actor.room == mode.exteriorDoor.room) return
+        }
+        mode.game.viewport.dispose()
+        mode.game.savegame.fromDoor = mode.game.savegame.roomPath
+        mode.game.savegame.roomPath = mode.exteriorDoor.roomPath
+        new Game(mode.game.savegame)
+    })
+    mode.game.partyFaction.think()
+    mode.exteriorDoor.open()
 }
 
 ExitingMode.prototype.showInventory = false
