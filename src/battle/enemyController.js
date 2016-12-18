@@ -14,6 +14,7 @@ EnemyController.prototype.getDirectionToMove = function() {
         if (!controller.actor.faction.shouldAttack(faction)) continue
         for (var j = 0; j < faction.actors.length; j++) {
             var enemy = faction.actors[j]
+            if (!enemy.health) continue
             if (controller.actor.canAttack(enemy.room)) return null
         }
     }
