@@ -9,7 +9,7 @@ EnemyController.prototype.setup = function() {}
 EnemyController.prototype.getDirectionToMove = function() {
     var controller = this
     if (controller.roomsToInvestigate.length) {
-        
+        SprigganRemoveByValue(controller.roomsToInvestigate, controller.actor.room)
         return controller.actor.room.navigateTo(function(room) {
             return controller.roomsToInvestigate.indexOf(room) != -1
         })
@@ -26,4 +26,9 @@ EnemyController.prototype.recordRoomToInvestigate = function(room) {
 
 EnemyController.prototype.hearSound = function(room) {
     this.recordRoomToInvestigate(room)
+}
+
+EnemyController.prototype.seeMotion = function(actor, fromRoom, toRoom) {
+    if (!this.actor.faction.shouldAttack(actor.faction)) return
+    this.recordRoomToInvestigate(toRoom)
 }

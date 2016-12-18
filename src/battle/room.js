@@ -203,6 +203,19 @@ Room.prototype.emitSound = function(distance) {
     }, distance)
 }
 
+Room.prototype.emitMotion = function(actor, toRoom) {
+    var origin = this
+    toRoom = toRoom || origin
+    origin.emitLineOfSight(1000, false, function(room) {
+        for (var i = 0; i < room.actors.length; i++)
+            room.actors[i].seeMotion(actor, origin, toRoom)
+    })
+    toRoom.emitLineOfSight(1000, false, function(room) {
+        for (var i = 0; i < room.actors.length; i++)
+            room.actors[i].seeMotion(actor, origin, toRoom)
+    })
+}
+
 function MakeLink(type) {
     type.prototype.roomOpposite = function(room) {
         return room == this.fromRoom ? this.toRoom : this.fromRoom

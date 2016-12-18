@@ -131,6 +131,7 @@ HumanActor.prototype.think = function() {
                     actor.room = next
                     previous.left.raise(actor)
                     if (next) next.entered.raise(actor)
+                    if (next) previous.emitMotion(actor, next)
                     if (link) {
                         actor.group.moveAtPixelsPerSecond(x + xDiff, y + yDiff, 100, function() {
                             link.leftBy(actor)
@@ -194,4 +195,8 @@ HumanActor.prototype.stopSaying = function() {
 
 HumanActor.prototype.hearSound = function(room) {
     this.controller.hearSound(room)
+}
+
+HumanActor.prototype.seeMotion = function(actor, fromRoom, toRoom) {
+    this.controller.seeMotion(actor, fromRoom, toRoom)
 }

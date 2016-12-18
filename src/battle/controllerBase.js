@@ -9,4 +9,4 @@ ControllerBase.prototype.bindTo = function(actor) {
 }
 
 ControllerBase.prototype.hearSound = function(room) {}
-ControllerBase.prototype.seeActor = function(actor) {}
+ControllerBase.prototype.seeMotion = function(actor, fromRoom, toRoom) {}
